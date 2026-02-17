@@ -27,11 +27,12 @@ export default function Home() {
   const [markerSize, setMarkerSize] = useState(0.18);
   const [markerColor, setMarkerColor] = useState<string | undefined>(undefined);
   const { lesions } = useLesionStore();
-  const [examInfo] = useState<ExamInfo>({
+  const [examInfo, setExamInfo] = useState<ExamInfo>({
     patient: 'Paciente A',
     date: new Date().toLocaleDateString('pt-BR'),
     type: 'Mapeamento EndoMapper',
   });
+  const [examPatientId, setExamPatientId] = useState('');
   const uterusRef = useRef<Uterus3DRef>(null);
   const [, setLocation] = useLocation();
 
@@ -129,7 +130,7 @@ export default function Home() {
 
     const reportId = createReport({
       patientName: examInfo.patient,
-      patientId: `PAC-${Date.now().toString(36).toUpperCase()}`,
+      patientId: examPatientId || `PAC-${Date.now().toString(36).toUpperCase()}`,
       examDate: examInfo.date,
       examType: 'Mapeamento EndoMapper',
       images2D: {
@@ -339,11 +340,32 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-4 pr-3 border-r border-slate-200 dark:border-slate-700">
-              <div className="text-right">
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">{examInfo.patient}</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">{examInfo.type}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5 dark:text-slate-500">{examInfo.date}</p>
+            <div className="flex items-center gap-3 pr-3 border-r border-slate-200 dark:border-slate-700">
+              <div className="flex flex-col gap-1">
+                <input
+                  type="text"
+                  value={examInfo.patient}
+                  onChange={(e) => setExamInfo(prev => ({ ...prev, patient: e.target.value }))}
+                  placeholder="Nome da paciente"
+                  className="text-sm font-semibold text-black bg-white border border-slate-200 rounded px-2 py-0.5 w-36 focus:outline-none focus:ring-1 focus:ring-pink-400"
+                  data-testid="input-patient-name"
+                />
+                <input
+                  type="text"
+                  value={examPatientId}
+                  onChange={(e) => setExamPatientId(e.target.value)}
+                  placeholder="ID"
+                  className="text-xs text-black bg-white border border-slate-200 rounded px-2 py-0.5 w-36 focus:outline-none focus:ring-1 focus:ring-pink-400"
+                  data-testid="input-patient-id"
+                />
+                <input
+                  type="text"
+                  value={examInfo.date}
+                  onChange={(e) => setExamInfo(prev => ({ ...prev, date: e.target.value }))}
+                  placeholder="Data do exame"
+                  className="text-[11px] text-black bg-white border border-slate-200 rounded px-2 py-0.5 w-36 focus:outline-none focus:ring-1 focus:ring-pink-400"
+                  data-testid="input-exam-date"
+                />
               </div>
             </div>
 
