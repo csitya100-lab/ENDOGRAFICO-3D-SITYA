@@ -1187,64 +1187,64 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
         </div>
       )}
       
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[2px] p-[2px] pointer-events-auto z-20">
-        <div ref={viewMainRef} className="relative border border-white/10 pointer-events-auto bg-transparent overflow-hidden group">
-           <div className="absolute top-2 left-2 bg-black/70 px-2 py-1 rounded text-xs font-mono text-pink-400 select-none z-10 backdrop-blur-sm">
+      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[1px] pointer-events-auto z-20 bg-gray-200">
+        <div ref={viewMainRef} className="relative border border-gray-200 pointer-events-auto bg-white overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-white/90 border border-pink-200 px-2 py-1 rounded text-xs font-mono text-pink-600 select-none z-10 shadow-sm">
              3D PERSPECTIVA
            </div>
            <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-              <span className="text-[9px] text-white/50 font-mono bg-black/50 px-2 py-1 rounded backdrop-blur-sm">Esquerdo: adicionar lesão · Direito: rotacionar</span>
+              <span className="text-[9px] text-gray-400 font-mono bg-white/80 border border-gray-100 px-2 py-1 rounded shadow-sm">Esquerdo: adicionar lesão · Direito: rotacionar</span>
            </div>
         </div>
 
-        <div ref={viewSagittalRef} className="relative border border-white/10 pointer-events-auto bg-transparent overflow-hidden group">
-           <div className="absolute top-2 left-2 bg-black/70 px-2 py-1 rounded text-xs font-mono text-blue-400 select-none z-10 backdrop-blur-sm">
+        <div ref={viewSagittalRef} className="relative border border-gray-200 pointer-events-auto bg-white overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-white/90 border border-blue-200 px-2 py-1 rounded text-xs font-mono text-blue-600 select-none z-10 shadow-sm">
              SAGITAL (LATERAL)
            </div>
            <button
              onClick={(e) => { e.stopPropagation(); captureViewScreenshot(1, 'sagittal-avf'); }}
-             className="absolute top-2 right-2 w-7 h-7 bg-blue-500/80 hover:bg-blue-500 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto"
+             className="absolute top-2 right-2 w-7 h-7 bg-blue-500 hover:bg-blue-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
              title="Capturar Sagittal"
              data-testid="button-capture-sagittal"
            >
              <Camera className="w-4 h-4 text-white" />
            </button>
            <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-              <span className="text-[9px] text-white/50 font-mono bg-black/50 px-2 py-1 rounded backdrop-blur-sm">Direito: adicionar lesão</span>
+              <span className="text-[9px] text-gray-400 font-mono bg-white/80 border border-gray-100 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
            </div>
         </div>
 
-        <div ref={viewCoronalRef} className="relative border border-white/10 pointer-events-auto bg-transparent overflow-hidden group">
-           <div className="absolute top-2 left-2 bg-black/70 px-2 py-1 rounded text-xs font-mono text-green-400 select-none z-10 backdrop-blur-sm">
+        <div ref={viewCoronalRef} className="relative border border-gray-200 pointer-events-auto bg-white overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-white/90 border border-green-200 px-2 py-1 rounded text-xs font-mono text-green-600 select-none z-10 shadow-sm">
              CORONAL (FRONTAL)
            </div>
            <button
              onClick={(e) => { e.stopPropagation(); captureViewScreenshot(2, 'coronal'); }}
-             className="absolute top-2 right-2 w-7 h-7 bg-green-500/80 hover:bg-green-500 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto"
+             className="absolute top-2 right-2 w-7 h-7 bg-green-500 hover:bg-green-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
              title="Capturar Coronal"
              data-testid="button-capture-coronal"
            >
              <Camera className="w-4 h-4 text-white" />
            </button>
            <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-              <span className="text-[9px] text-white/50 font-mono bg-black/50 px-2 py-1 rounded backdrop-blur-sm">Direito: adicionar lesão</span>
+              <span className="text-[9px] text-gray-400 font-mono bg-white/80 border border-gray-100 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
            </div>
         </div>
 
-        <div ref={viewPosteriorRef} className="relative border border-white/10 pointer-events-auto bg-transparent overflow-hidden group">
-           <div className="absolute top-2 left-2 bg-black/70 px-2 py-1 rounded text-xs font-mono text-yellow-400 select-none z-10 backdrop-blur-sm">
+        <div ref={viewPosteriorRef} className="relative border border-gray-200 pointer-events-auto bg-white overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-white/90 border border-yellow-200 px-2 py-1 rounded text-xs font-mono text-yellow-600 select-none z-10 shadow-sm">
              POSTERIOR (TRÁS)
            </div>
            <button
              onClick={(e) => { e.stopPropagation(); captureViewScreenshot(3, 'posterior'); }}
-             className="absolute top-2 right-2 w-7 h-7 bg-yellow-500/80 hover:bg-yellow-500 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto"
+             className="absolute top-2 right-2 w-7 h-7 bg-yellow-500 hover:bg-yellow-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
              title="Capturar Posterior"
              data-testid="button-capture-posterior"
            >
              <Camera className="w-4 h-4 text-white" />
            </button>
            <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-              <span className="text-[9px] text-white/50 font-mono bg-black/50 px-2 py-1 rounded backdrop-blur-sm">Direito: adicionar lesão</span>
+              <span className="text-[9px] text-gray-400 font-mono bg-white/80 border border-gray-100 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
            </div>
         </div>
       </div>
