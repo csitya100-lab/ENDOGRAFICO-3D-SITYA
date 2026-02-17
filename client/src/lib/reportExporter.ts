@@ -192,7 +192,7 @@ export async function exportToPDF(report: Report): Promise<void> {
 
     pdf.setFont("helvetica", "normal");
     report.lesions.forEach((lesion) => {
-      if (y > 275) {
+      if (y > 270) {
         pdf.addPage();
         y = margin;
       }
@@ -202,7 +202,10 @@ export async function exportToPDF(report: Report): Promise<void> {
       pdf.circle(margin + 4, y + 2.5, 2, "F");
 
       pdf.setTextColor(30, 41, 59);
+      pdf.setFont("helvetica", "bold");
       pdf.text(lesion.name, margin + 10, y + 4);
+      
+      pdf.setFont("helvetica", "normal");
       pdf.setTextColor(71, 85, 105);
       pdf.text(lesion.location.substring(0, 40), margin + 40, y + 4);
 
@@ -210,7 +213,19 @@ export async function exportToPDF(report: Report): Promise<void> {
       pdf.setTextColor(sevColor[0], sevColor[1], sevColor[2]);
       pdf.text(sevLabel, margin + contentWidth - 30, y + 4);
 
-      y += 8;
+      y += 6;
+
+      if (lesion.comment) {
+        pdf.setFontSize(8);
+        pdf.setFont("helvetica", "italic");
+        pdf.setTextColor(100, 116, 139);
+        
+        const splitComment = pdf.splitTextToSize(lesion.comment, contentWidth - 50);
+        pdf.text(splitComment, margin + 10, y + 2);
+        y += (splitComment.length * 4) + 2;
+      } else {
+        y += 2;
+      }
     });
   }
 
@@ -423,8 +438,9 @@ export async function exportToWord(report: Report): Promise<void> {
       ],
     });
 
-    const lesionRows = report.lesions.map(
-      (lesion) =>
+    const lesionRows = [];
+    for (const lesion of report.lesions) {
+      lesionRows.push(
         new TableRow({
           children: [
             new TableCell({
@@ -458,7 +474,34 @@ export async function exportToWord(report: Report): Promise<void> {
             }),
           ],
         })
-    );
+      );
+
+      if (lesion.comment) {
+        lesionRows.push(
+          new TableRow({
+            children: [
+              new TableCell({
+                columnSpan: 3,
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: `Obs: ${lesion.comment}`,
+                        size: 16,
+                        font: "Arial",
+                        color: "64748B",
+                        italics: true,
+                      }),
+                    ],
+                    spacing: { before: 50, after: 50 },
+                  }),
+                ],
+              }),
+            ],
+          })
+        );
+      }
+    }
 
     const lesionTable = new Table({
       width: { size: 100, type: WidthType.PERCENTAGE },
