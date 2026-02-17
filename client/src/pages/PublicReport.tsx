@@ -272,13 +272,6 @@ export default function PublicReport() {
             )}
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-700">Relatório</p>
-            <p
-              className="text-sm font-mono text-slate-800"
-              data-testid="text-report-id"
-            >
-              {report.id}
-            </p>
             <div className="no-print mt-2 flex items-center gap-2 justify-end flex-wrap">
               <button
                 onClick={() => window.print()}
