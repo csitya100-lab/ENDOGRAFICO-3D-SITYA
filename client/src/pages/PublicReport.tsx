@@ -461,8 +461,15 @@ export default function PublicReport() {
           <div className="p-4">
             {report.lesions.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {report.lesions.map((lesion) => {
+                {report.lesions.map((lesion, idx) => {
                   const severity = SEVERITY_COLORS[lesion.severity];
+                  const updateLesionField = (field: 'name' | 'location', value: string) => {
+                    setReport(prev => {
+                      if (!prev) return prev;
+                      const updated = { ...prev, lesions: prev.lesions.map((l, i) => i === idx ? { ...l, [field]: value } : l) };
+                      return updated;
+                    });
+                  };
                   return (
                     <div
                       key={lesion.id}
@@ -473,13 +480,21 @@ export default function PublicReport() {
                         className="w-4 h-4 rounded-full flex-shrink-0"
                         style={{ backgroundColor: severity.hex }}
                       />
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium ${severity.text}`}>
-                          {lesion.name}
-                        </p>
-                        <p className="text-xs text-slate-800 truncate">
-                          {lesion.location}
-                        </p>
+                      <div className="flex-1 min-w-0 flex flex-col gap-1">
+                        <input
+                          type="text"
+                          value={lesion.name}
+                          onChange={(e) => updateLesionField('name', e.target.value)}
+                          className={`text-sm font-medium ${severity.text} bg-transparent border border-transparent hover:border-slate-300 focus:border-slate-400 rounded px-1 py-0.5 w-full focus:outline-none`}
+                          data-testid={`input-lesion-name-${lesion.id}`}
+                        />
+                        <input
+                          type="text"
+                          value={lesion.location}
+                          onChange={(e) => updateLesionField('location', e.target.value)}
+                          className="text-xs text-slate-800 bg-transparent border border-transparent hover:border-slate-300 focus:border-slate-400 rounded px-1 py-0.5 w-full focus:outline-none"
+                          data-testid={`input-lesion-location-${lesion.id}`}
+                        />
                       </div>
                       <span
                         className={`text-xs font-medium ${severity.text} px-2 py-0.5 rounded-full ${severity.bg}`}
