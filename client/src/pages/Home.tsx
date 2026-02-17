@@ -7,7 +7,7 @@ import { useLesionStore, Severity, Lesion } from '@/lib/lesionStore';
 import { useReportStore } from '@/lib/reportStore';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Circle, RotateCcw, Clock, CheckCircle, AlertCircle, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair } from 'lucide-react';
+import { Circle, RotateCcw, Clock, CheckCircle, AlertCircle, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair, X } from 'lucide-react';
 import { export3DModelAsHtml } from '@/lib/export3DHtml';
 import { getAnatomyLabel } from '@/lib/anatomyStore';
 import { saveCaseToDb, isSupabaseConfigured } from '@/lib/caseDb';
@@ -103,7 +103,8 @@ export default function Home() {
     createReport, 
     clearDraftImages2D, 
     clearDraftImages3D,
-    addDraftImage3D 
+    addDraftImage3D,
+    removeDraftImage3D
   } = useReportStore();
 
   const handleCapture3D = () => {
@@ -376,15 +377,40 @@ export default function Home() {
 
             <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
 
-            <Button 
-              size="sm" 
-              onClick={handleCapture3D}
-              className="text-xs h-9 bg-purple-600 text-white hover:bg-purple-700 border border-purple-500"
-              data-testid="button-capture-3d"
-            >
-              <Camera className="w-3.5 h-3.5 mr-1.5" />
-              Capturar 3D
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                size="sm" 
+                onClick={handleCapture3D}
+                className="text-xs h-9 bg-purple-600 text-white hover:bg-purple-700 border border-purple-500"
+                data-testid="button-capture-3d"
+              >
+                <Camera className="w-3.5 h-3.5 mr-1.5" />
+                Capturar 3D
+              </Button>
+              {draftImages3D.length > 0 && (
+                <div className="flex items-center gap-1">
+                  {draftImages3D.map((img, idx) => (
+                    <div key={img.id} className="relative group" data-testid={`capture-thumb-${idx}`}>
+                      <img
+                        src={img.data}
+                        alt={img.label}
+                        className="w-9 h-9 rounded border border-purple-300 object-cover"
+                      />
+                      <button
+                        onClick={() => {
+                          removeDraftImage3D(img.id);
+                          toast.info(`Captura ${idx + 1} removida`);
+                        }}
+                        className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                        data-testid={`button-remove-capture-${idx}`}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
 
