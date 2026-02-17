@@ -488,36 +488,6 @@ export default function Home() {
               </h3>
               <AnatomyPanel />
             </div>
-            <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
-              <h3 className="text-xs font-bold text-slate-900 tracking-wide mb-3 dark:text-white uppercase">
-                Observações das Lesões
-              </h3>
-              <div className="space-y-3">
-                {lesions.length > 0 ? (
-                  lesions.map((l, idx) => (
-                    <div key={l.id} className="space-y-1.5 p-2 rounded border border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-700">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">
-                          Lesão {String.fromCharCode(65 + idx)}
-                        </span>
-                        <div className={`w-2 h-2 rounded-full ${l.severity === 'superficial' ? 'bg-pink-500' : 'bg-yellow-500'}`} title={l.severity === 'superficial' ? 'Superficial' : 'Profunda'} />
-                      </div>
-                      <textarea
-                        value={l.observacoes || ''}
-                        onChange={(e) => useLesionStore.getState().updateLesion(l.id, { observacoes: e.target.value })}
-                        placeholder="Adicionar observações..."
-                        className="w-full text-xs p-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded resize-none focus:outline-none focus:ring-1 focus:ring-pink-400 min-h-[60px]"
-                        rows={2}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-[10px] text-slate-400 italic text-center py-2">
-                    Nenhuma lesão para comentar
-                  </p>
-                )}
-              </div>
-            </div>
           </aside>
         </div>
       </div>
