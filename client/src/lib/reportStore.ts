@@ -8,6 +8,7 @@ export interface ReportLesion {
   location: string;
   severity: Severity;
   position: { x: number; y: number; z: number };
+  comment?: string;
 }
 
 export interface Image3D {

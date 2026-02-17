@@ -463,7 +463,7 @@ export default function PublicReport() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {report.lesions.map((lesion, idx) => {
                   const severity = SEVERITY_COLORS[lesion.severity];
-                  const updateLesionField = (field: 'name' | 'location', value: string) => {
+                  const updateLesionField = (field: 'name' | 'location' | 'comment', value: string) => {
                     setReport(prev => {
                       if (!prev) return prev;
                       const updated = { ...prev, lesions: prev.lesions.map((l, i) => i === idx ? { ...l, [field]: value } : l) };
@@ -495,9 +495,17 @@ export default function PublicReport() {
                           className="text-xs text-slate-800 bg-transparent border border-transparent hover:border-slate-300 focus:border-slate-400 rounded px-1 py-0.5 w-full focus:outline-none"
                           data-testid={`input-lesion-location-${lesion.id}`}
                         />
+                        <textarea
+                          value={lesion.comment || ''}
+                          onChange={(e) => updateLesionField('comment', e.target.value)}
+                          placeholder="Adicionar comentário..."
+                          rows={2}
+                          className="text-xs text-slate-700 bg-transparent border border-dashed border-slate-300 hover:border-slate-400 focus:border-slate-400 rounded px-1 py-0.5 w-full focus:outline-none resize-none placeholder:text-slate-400"
+                          data-testid={`input-lesion-comment-${lesion.id}`}
+                        />
                       </div>
                       <span
-                        className={`text-xs font-medium ${severity.text} px-2 py-0.5 rounded-full ${severity.bg}`}
+                        className={`text-xs font-medium ${severity.text} px-2 py-0.5 rounded-full ${severity.bg} self-start mt-1`}
                       >
                         {severity.label}
                       </span>
