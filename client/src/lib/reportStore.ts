@@ -78,6 +78,7 @@ interface ReportState {
   createReport: (report: Omit<Report, "id" | "createdAt">) => string;
   getReport: (id: string) => Report | undefined;
   deleteReport: (id: string) => void;
+  removeReportImage3D: (reportId: string, imageId: string) => void;
 
   addPdfImage: (image: PdfImage) => void;
   removePdfImage: (index: number) => void;
@@ -204,6 +205,22 @@ export const useReportStore = create<ReportState>()(
         set((state) => {
           const { [id]: removed, ...rest } = state.reports;
           return { reports: rest };
+        });
+      },
+
+      removeReportImage3D: (reportId, imageId) => {
+        set((state) => {
+          const report = state.reports[reportId];
+          if (!report) return state;
+          return {
+            reports: {
+              ...state.reports,
+              [reportId]: {
+                ...report,
+                images3D: report.images3D.filter((img) => img.id !== imageId),
+              },
+            },
+          };
         });
       },
 

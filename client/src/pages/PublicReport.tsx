@@ -3,7 +3,7 @@ import { useParams } from "wouter";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { ChevronLeft, ChevronRight, X, Printer, FileDown, FileText } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Printer, FileDown, FileText, Trash2 } from "lucide-react";
 import { useReportStore, Report } from "@/lib/reportStore";
 import { exportToPDF, exportToWord } from "@/lib/reportExporter";
 import { Severity } from "@/lib/lesionStore";
@@ -40,7 +40,7 @@ export default function PublicReport() {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [expandedPhoto, setExpandedPhoto] = useState<string | null>(null);
   const [exporting, setExporting] = useState<string | null>(null);
-  const { getReport, hydrated } = useReportStore();
+  const { getReport, hydrated, removeReportImage3D } = useReportStore();
 
   useEffect(() => {
     if (!hydrated) return;
@@ -406,10 +406,33 @@ export default function PublicReport() {
                         data-testid={`img-3d-capture-${photoIndex}`}
                       />
                     </div>
-                    <div className="mt-2 text-center">
+                    <div className="mt-2 flex items-center justify-center gap-2">
                       <span className="text-xs text-slate-600">
                         {images3D[photoIndex]?.label}
                       </span>
+                      <button
+                        onClick={() => {
+                          const img = images3D[photoIndex];
+                          if (img && id) {
+                            removeReportImage3D(id, img.id);
+                            setReport((prev) => {
+                              if (!prev) return prev;
+                              return {
+                                ...prev,
+                                images3D: prev.images3D.filter((i) => i.id !== img.id),
+                              };
+                            });
+                            if (photoIndex >= images3D.length - 1) {
+                              setPhotoIndex(Math.max(0, photoIndex - 1));
+                            }
+                          }
+                        }}
+                        className="no-print w-6 h-6 bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-700 rounded-full flex items-center justify-center transition-colors"
+                        title="Excluir captura"
+                        data-testid={`button-delete-3d-${photoIndex}`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                     {images3D.length > 1 && (
                       <>
