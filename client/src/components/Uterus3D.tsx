@@ -1187,7 +1187,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
         </div>
       )}
       
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[1px] pointer-events-auto z-20 bg-gray-200">
+      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-0 pointer-events-auto z-20">
         <div ref={viewMainRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
            <div className="absolute top-2 left-2 bg-white/90 border border-pink-200 px-2 py-1 rounded text-xs font-mono text-pink-600 select-none z-10 shadow-sm">
              3D PERSPECTIVA
