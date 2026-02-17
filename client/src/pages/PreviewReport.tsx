@@ -350,11 +350,15 @@ export default function PreviewReport() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removePdfImage(index)}
-                          className="h-7 w-7 p-0 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
+                          onClick={() => {
+                            removePdfImage(index);
+                            toast.info('Imagem removida do relatório');
+                          }}
+                          className="h-7 px-2 text-red-400 hover:text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10"
                           data-testid={`button-remove-${index}`}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          <span className="text-xs">Excluir</span>
                         </Button>
                       </div>
                     </div>
