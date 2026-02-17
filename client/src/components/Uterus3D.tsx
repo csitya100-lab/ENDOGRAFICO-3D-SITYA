@@ -595,7 +595,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     rendererRef.current = renderer;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0a0a);
+    scene.background = new THREE.Color(0xffffff);
     sceneRef.current = scene;
     
     const ambientLight = new THREE.AmbientLight(0xFFF5E1, isIOSDevice ? 0.9 : 0.7);
