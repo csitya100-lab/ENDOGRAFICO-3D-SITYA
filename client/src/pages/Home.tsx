@@ -130,7 +130,7 @@ export default function Home() {
 
     const reportId = createReport({
       patientName: examInfo.patient,
-      patientId: examPatientId || `PAC-${Date.now().toString(36).toUpperCase()}`,
+      patientId: examPatientId || '',
       examDate: examInfo.date,
       examType: 'Mapeamento EndoMapper',
       images2D: {

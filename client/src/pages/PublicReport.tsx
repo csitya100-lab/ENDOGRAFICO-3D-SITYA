@@ -257,17 +257,19 @@ export default function PublicReport() {
                 {report.examDate}
               </p>
             </div>
-            <div>
-              <p className="text-xs text-slate-800 uppercase tracking-wide">
-                ID
-              </p>
-              <p
-                className="text-lg font-semibold text-slate-900"
-                data-testid="text-patient-id"
-              >
-                {report.patientId}
-              </p>
-            </div>
+            {report.patientId && (
+              <div>
+                <p className="text-xs text-slate-800 uppercase tracking-wide">
+                  ID
+                </p>
+                <p
+                  className="text-lg font-semibold text-slate-900"
+                  data-testid="text-patient-id"
+                >
+                  {report.patientId}
+                </p>
+              </div>
+            )}
           </div>
           <div className="text-right">
             <p className="text-xs text-slate-700">Relatório</p>
