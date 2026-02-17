@@ -1188,7 +1188,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
       )}
       
       <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[1px] pointer-events-auto z-20 bg-gray-200">
-        <div ref={viewMainRef} className="relative border border-gray-200 pointer-events-auto bg-white overflow-hidden group">
+        <div ref={viewMainRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
            <div className="absolute top-2 left-2 bg-white/90 border border-pink-200 px-2 py-1 rounded text-xs font-mono text-pink-600 select-none z-10 shadow-sm">
              3D PERSPECTIVA
            </div>
@@ -1197,7 +1197,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
            </div>
         </div>
 
-        <div ref={viewSagittalRef} className="relative border border-gray-200 pointer-events-auto bg-white overflow-hidden group">
+        <div ref={viewSagittalRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
            <div className="absolute top-2 left-2 bg-white/90 border border-blue-200 px-2 py-1 rounded text-xs font-mono text-blue-600 select-none z-10 shadow-sm">
              SAGITAL (LATERAL)
            </div>
@@ -1214,7 +1214,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
            </div>
         </div>
 
-        <div ref={viewCoronalRef} className="relative border border-gray-200 pointer-events-auto bg-white overflow-hidden group">
+        <div ref={viewCoronalRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
            <div className="absolute top-2 left-2 bg-white/90 border border-green-200 px-2 py-1 rounded text-xs font-mono text-green-600 select-none z-10 shadow-sm">
              CORONAL (FRONTAL)
            </div>
@@ -1231,7 +1231,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
            </div>
         </div>
 
-        <div ref={viewPosteriorRef} className="relative border border-gray-200 pointer-events-auto bg-white overflow-hidden group">
+        <div ref={viewPosteriorRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
            <div className="absolute top-2 left-2 bg-white/90 border border-yellow-200 px-2 py-1 rounded text-xs font-mono text-yellow-600 select-none z-10 shadow-sm">
              POSTERIOR (TRÁS)
            </div>
