@@ -63,6 +63,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
   const viewSagittalRef = useRef<HTMLDivElement>(null);
   const viewCoronalRef = useRef<HTMLDivElement>(null);
   const viewPosteriorRef = useRef<HTMLDivElement>(null);
+  const viewSagittalRLRef = useRef<HTMLDivElement>(null);
   
   const { lesions, addLesion, updateLesion, removeLesion, clearLesions } = useLesionStore();
   const { setDraftImage } = useReportStore();
@@ -173,6 +174,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
       captureViewScreenshot(1, 'sagittal-avf');
       captureViewScreenshot(2, 'coronal');
       captureViewScreenshot(3, 'posterior');
+      captureViewScreenshot(4, 'sagittal-rl');
     },
     captureScreenshot: () => {
       const renderer = rendererRef.current;
@@ -548,7 +550,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
   };
 
   useEffect(() => {
-    if (!canvasRef.current || !viewMainRef.current || !viewSagittalRef.current || !viewCoronalRef.current || !viewPosteriorRef.current) return;
+    if (!canvasRef.current || !viewMainRef.current || !viewSagittalRef.current || !viewCoronalRef.current || !viewPosteriorRef.current || !viewSagittalRLRef.current) return;
 
     let animationFrameId: number;
     let isMounted = true;
@@ -795,7 +797,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     loadModelWithCache();
 
     // Initialize marker groups
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       markerGroupsRef.current[i] = new THREE.Group();
       scene.add(markerGroupsRef.current[i]);
     }
@@ -849,6 +851,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     views.push(setupView(viewSagittalRef.current, 'orthographic', [10, 0, 0], [0, 1, 0], 1));
     views.push(setupView(viewCoronalRef.current, 'orthographic', [0, 0, 10], [0, 1, 0], 2));
     views.push(setupView(viewPosteriorRef.current, 'orthographic', [0, 0, -10], [0, 1, 0], 3));
+    views.push(setupView(viewSagittalRLRef.current, 'orthographic', [-10, 0, 0], [0, 1, 0], 4));
 
     views[0].controls.enableRotate = true;
 
@@ -1196,19 +1199,19 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
         </div>
       )}
       
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-0 pointer-events-auto z-20">
-        <div ref={viewMainRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
-           <div className="absolute top-2 left-2 bg-white/90 border border-pink-200 px-2 py-1 rounded text-xs font-mono text-pink-600 select-none z-10 shadow-sm">
+      <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-0 pointer-events-auto z-20">
+        <div ref={viewMainRef} className="relative col-span-2 border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-slate-800/90 border border-pink-500/30 px-2 py-1 rounded text-xs font-mono text-pink-400 select-none z-10 shadow-sm">
              3D PERSPECTIVA
            </div>
            <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-              <span className="text-[9px] text-gray-400 font-mono bg-white/80 border border-gray-100 px-2 py-1 rounded shadow-sm">Esquerdo: adicionar lesão · Direito: rotacionar</span>
+              <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Esquerdo: adicionar lesão · Direito: rotacionar</span>
            </div>
         </div>
 
-        <div ref={viewSagittalRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
-           <div className="absolute top-2 left-2 bg-white/90 border border-blue-200 px-2 py-1 rounded text-xs font-mono text-blue-600 select-none z-10 shadow-sm">
-             SAGITAL (LATERAL)
+        <div ref={viewSagittalRef} className="relative border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-slate-800/90 border border-blue-500/30 px-2 py-1 rounded text-xs font-mono text-blue-400 select-none z-10 shadow-sm">
+             SAGITAL (ESQ → DIR)
            </div>
            <button
              onClick={(e) => { e.stopPropagation(); captureViewScreenshot(1, 'sagittal-avf'); }}
@@ -1219,12 +1222,29 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
              <Camera className="w-4 h-4 text-white" />
            </button>
            <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-              <span className="text-[9px] text-gray-400 font-mono bg-white/80 border border-gray-100 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+              <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
            </div>
         </div>
 
-        <div ref={viewCoronalRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
-           <div className="absolute top-2 left-2 bg-white/90 border border-green-200 px-2 py-1 rounded text-xs font-mono text-green-600 select-none z-10 shadow-sm">
+        <div ref={viewSagittalRLRef} className="relative border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-slate-800/90 border border-purple-500/30 px-2 py-1 rounded text-xs font-mono text-purple-400 select-none z-10 shadow-sm">
+             SAGITAL (DIR → ESQ)
+           </div>
+           <button
+             onClick={(e) => { e.stopPropagation(); captureViewScreenshot(4, 'sagittal-rl'); }}
+             className="absolute top-2 right-2 w-7 h-7 bg-purple-500 hover:bg-purple-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
+             title="Capturar Sagittal DIR → ESQ"
+             data-testid="button-capture-sagittal-rl"
+           >
+             <Camera className="w-4 h-4 text-white" />
+           </button>
+           <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
+              <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+           </div>
+        </div>
+
+        <div ref={viewCoronalRef} className="relative border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-slate-800/90 border border-green-500/30 px-2 py-1 rounded text-xs font-mono text-green-400 select-none z-10 shadow-sm">
              CORONAL (FRONTAL)
            </div>
            <button
@@ -1236,12 +1256,12 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
              <Camera className="w-4 h-4 text-white" />
            </button>
            <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-              <span className="text-[9px] text-gray-400 font-mono bg-white/80 border border-gray-100 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+              <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
            </div>
         </div>
 
-        <div ref={viewPosteriorRef} className="relative border border-gray-200 pointer-events-auto bg-transparent overflow-hidden group">
-           <div className="absolute top-2 left-2 bg-white/90 border border-yellow-200 px-2 py-1 rounded text-xs font-mono text-yellow-600 select-none z-10 shadow-sm">
+        <div ref={viewPosteriorRef} className="relative border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+           <div className="absolute top-2 left-2 bg-slate-800/90 border border-yellow-500/30 px-2 py-1 rounded text-xs font-mono text-yellow-400 select-none z-10 shadow-sm">
              POSTERIOR (TRÁS)
            </div>
            <button
@@ -1253,7 +1273,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
              <Camera className="w-4 h-4 text-white" />
            </button>
            <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-              <span className="text-[9px] text-gray-400 font-mono bg-white/80 border border-gray-100 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+              <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
            </div>
         </div>
       </div>
