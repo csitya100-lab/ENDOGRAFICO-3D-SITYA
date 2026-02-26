@@ -48,31 +48,46 @@ export function processGLBModel(
           const g = originalColor.g;
           const b = originalColor.b;
 
-          let newColor = new THREE.Color(0xDD8A96);
-          let roughness = 0.45;
+          let newColor = new THREE.Color(0xd67c7c);
+          let roughness = 0.4;
           let metalness = 0.05;
           let clearcoat = isIOSDevice ? 0 : 0.1;
+          let clearcoatRoughness = 0.3;
           let envMapIntensity = 0.5;
+          let transparent = false;
+          let opacity = 1.0;
 
           if (r > 0.8 && g > 0.8 && b < 0.4) {
-              newColor = new THREE.Color(0xFFD700);
+              newColor = new THREE.Color(0xffe6a0);
+              roughness = 0.1;
+              metalness = 0.1;
+              transparent = true;
+              opacity = 0.3;
           }
           else if (r < 0.4 && g > 0.7 && b > 0.8) {
-              newColor = new THREE.Color(0x87CEEB);
+              newColor = new THREE.Color(0xffeebb);
+              roughness = 0.3;
+              metalness = 0.0;
+              transparent = true;
+              opacity = 0.6;
           }
           else if (r > 0.7 && g > 0.4 && b > 0.3 && r - g > 0.2) {
-              newColor = new THREE.Color(0xD4956F);
+              newColor = new THREE.Color(0xd48c8c);
+              roughness = 0.5;
+              metalness = 0.0;
+              clearcoat = 0;
           }
           else if (r > 0.6 && g > 0.4 && b > 0.3 && r - g < 0.3) {
-              newColor = new THREE.Color(0xC49080);
-              roughness = 0.50;
-              clearcoat = isIOSDevice ? 0 : 0.08;
+              newColor = new THREE.Color(0xe08e8e);
+              roughness = 0.4;
+              metalness = 0.0;
+              clearcoat = 0;
           }
           else if (r > 0.8 && g < 0.7 && b < 0.7 && r - g < 0.3) {
-              newColor = new THREE.Color(0xE8B4B8);
-              roughness = 0.55;
-              metalness = 0.02;
-              clearcoat = isIOSDevice ? 0 : 0.05;
+              newColor = new THREE.Color(0xe8dcc5);
+              roughness = 0.5;
+              metalness = 0.0;
+              clearcoat = isIOSDevice ? 0 : 0.1;
               envMapIntensity = 0.3;
           }
 
@@ -82,17 +97,27 @@ export function processGLBModel(
                   color: newColor,
                   roughness: roughness,
                   metalness: metalness,
+                  transparent: transparent,
+                  opacity: opacity,
                   side: THREE.DoubleSide
               });
           } else {
-              newMaterial = new THREE.MeshPhysicalMaterial({
+              const physicalParams: any = {
                   color: newColor,
                   roughness: roughness,
                   metalness: metalness,
                   clearcoat: clearcoat,
+                  clearcoatRoughness: clearcoatRoughness,
                   envMapIntensity: envMapIntensity,
+                  transparent: transparent,
+                  opacity: opacity,
                   side: THREE.DoubleSide
-              });
+              };
+              if (transparent && opacity < 0.5) {
+                  physicalParams.transmission = 0.1;
+                  physicalParams.thickness = 0.2;
+              }
+              newMaterial = new THREE.MeshPhysicalMaterial(physicalParams);
           }
 
           mesh.material = newMaterial;

@@ -9,9 +9,9 @@ export function createProgrammaticAnatomy(
 ): void {
   // Add uterosacral ligaments - positioned at uterus body/cervix junction
   const ligamentMaterial = new THREE.MeshStandardMaterial({
-    color: 0xC49080,
-    roughness: 0.55,
-    metalness: 0.02,
+    color: 0xe08e8e,
+    roughness: 0.4,
+    metalness: 0.0,
     side: THREE.DoubleSide
   });
   
@@ -47,9 +47,11 @@ export function createProgrammaticAnatomy(
   
   // Add ureters - thin tubes running laterally near the uterus
   const ureterMaterial = new THREE.MeshStandardMaterial({
-    color: 0xFFE4B5,
-    roughness: 0.6,
+    color: 0xffeebb,
+    roughness: 0.3,
     metalness: 0.0,
+    transparent: true,
+    opacity: 0.6,
     side: THREE.DoubleSide
   });
   
@@ -84,9 +86,9 @@ export function createProgrammaticAnatomy(
   anatomyMeshes.ureters.push(leftUreter);
   
   const roundLigamentMaterial = new THREE.MeshStandardMaterial({
-    color: 0xD4956F,
-    roughness: 0.55,
-    metalness: 0.02,
+    color: 0xe08e8e,
+    roughness: 0.4,
+    metalness: 0.0,
     side: THREE.DoubleSide
   });
   
@@ -123,17 +125,17 @@ export function createProgrammaticAnatomy(
   // Fallopian tubes (tubas uterinas) - positioned at cornual region, extending laterally
   // Anatomically: intramural → isthmus → ampulla → infundibulum with fimbriae
   const fallopianTubeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xE8A090,
-    roughness: 0.5,
-    metalness: 0.02,
+    color: 0xd67c7c,
+    roughness: 0.4,
+    metalness: 0.05,
     side: THREE.DoubleSide
   });
   
   // Fimbriae material - slightly different color for the finger-like ends
   const fimbriaeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xF0B0A0,
-    roughness: 0.45,
-    metalness: 0.01,
+    color: 0xd67c7c,
+    roughness: 0.4,
+    metalness: 0.05,
     side: THREE.DoubleSide
   });
   

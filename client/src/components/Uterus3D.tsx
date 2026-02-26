@@ -595,14 +595,15 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     rendererRef.current = renderer;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0x0f172a);
+    scene.fog = new THREE.FogExp2(0x0f172a, 0.02);
     sceneRef.current = scene;
     
-    const ambientLight = new THREE.AmbientLight(0xFFF5E1, isIOSDevice ? 0.9 : 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffffff, isIOSDevice ? 0.5 : 0.4);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.3);
-    dirLight.position.set(8, 8, 5);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(5, 10, 7);
     
     if (!isIOSDevice && !isMobileDevice) {
       dirLight.castShadow = true;
@@ -618,9 +619,17 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     }
     scene.add(dirLight);
 
-    const fillLight = new THREE.DirectionalLight(0xD3D3D3, 0.4);
-    fillLight.position.set(-8, 3, 5);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    fillLight.position.set(-5, 0, 5);
     scene.add(fillLight);
+
+    const pinkLight = new THREE.PointLight(0xffd1dc, 0.5, 20);
+    pinkLight.position.set(0, 2, 5);
+    scene.add(pinkLight);
+
+    const rimLight = new THREE.PointLight(0x8b5cf6, 0.5, 20);
+    rimLight.position.set(0, 2, -5);
+    scene.add(rimLight);
 
     const anatomyGroup = new THREE.Group();
     anatomyGroupRef.current = anatomyGroup;
@@ -659,9 +668,9 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
       resetAnatomyMeshes();
       const geometry = new THREE.SphereGeometry(1.8, 32, 24);
       const material = new THREE.MeshStandardMaterial({
-        color: 0xDD8A96,
-        roughness: 0.5,
-        metalness: 0.1,
+        color: 0xd67c7c,
+        roughness: 0.4,
+        metalness: 0.05,
         side: THREE.DoubleSide
       });
       const sphere = new THREE.Mesh(geometry, material);

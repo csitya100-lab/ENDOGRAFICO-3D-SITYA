@@ -64,7 +64,8 @@ export default function PublicReport() {
     const canvas = canvasRef.current;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1e293b);
+    scene.background = new THREE.Color(0x0f172a);
+    scene.fog = new THREE.FogExp2(0x0f172a, 0.02);
 
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -90,16 +91,24 @@ export default function PublicReport() {
     controls.minDistance = 2;
     controls.maxDistance = 10;
 
-    const ambientLight = new THREE.AmbientLight(0xFFF5E1, 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.3);
-    directionalLight.position.set(8, 8, 5);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    directionalLight.position.set(5, 10, 7);
     scene.add(directionalLight);
 
-    const fillLight = new THREE.DirectionalLight(0xD3D3D3, 0.4);
-    fillLight.position.set(-8, 3, 5);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    fillLight.position.set(-5, 0, 5);
     scene.add(fillLight);
+
+    const pinkLight = new THREE.PointLight(0xffd1dc, 0.5, 20);
+    pinkLight.position.set(0, 2, 5);
+    scene.add(pinkLight);
+
+    const rimLight = new THREE.PointLight(0x8b5cf6, 0.5, 20);
+    rimLight.position.set(0, 2, -5);
+    scene.add(rimLight);
 
     let animationId: number;
 
