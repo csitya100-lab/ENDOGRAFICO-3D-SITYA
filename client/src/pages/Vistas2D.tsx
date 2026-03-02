@@ -172,17 +172,56 @@ export default function Vistas2D() {
     }
   };
 
-  const handleExportView = (viewType: ViewType) => {
+  const handleExportView = async (viewType: ViewType) => {
     const imgData = captureViewImage(viewType);
-    if (imgData) {
-      const link = document.createElement("a");
-      link.download = `${VIEW_LABELS[viewType].replace(/[^a-zA-Z0-9]/g, '_')}.png`;
-      link.href = imgData;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      toast.success(`${VIEW_LABELS[viewType]} exportada com sucesso`);
-    }
+    if (!imgData) return;
+
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+    const pageW = 210;
+    const pageH = 297;
+    const margin = 15;
+    const usableW = pageW - margin * 2;
+    const headerH = 20;
+    const footerH = 10;
+    const usableH = pageH - margin * 2 - headerH - footerH;
+
+    doc.setFontSize(14);
+    doc.setTextColor(60, 60, 60);
+    doc.text("EndoMapper", margin, margin + 6);
+    doc.setFontSize(11);
+    doc.setTextColor(120, 120, 120);
+    doc.text(VIEW_LABELS[viewType], margin, margin + 13);
+    doc.setFontSize(9);
+    doc.text(new Date().toLocaleDateString("pt-BR"), pageW - margin, margin + 6, { align: "right" });
+
+    doc.setDrawColor(220, 220, 220);
+    doc.line(margin, margin + headerH, pageW - margin, margin + headerH);
+
+    const img = new Image();
+    img.src = imgData;
+    await new Promise<void>((resolve) => { img.onload = () => resolve(); });
+
+    const imgW = img.naturalWidth;
+    const imgH = img.naturalHeight;
+    const scaleW = usableW / imgW;
+    const scaleH = usableH / imgH;
+    const scale = Math.min(scaleW, scaleH);
+    const drawW = imgW * scale;
+    const drawH = imgH * scale;
+    const drawX = margin + (usableW - drawW) / 2;
+    const drawY = margin + headerH + (usableH - drawH) / 2;
+
+    doc.addImage(imgData, "PNG", drawX, drawY, drawW, drawH);
+
+    doc.setFontSize(7);
+    doc.setTextColor(180, 180, 180);
+    doc.text("EndoMapper — Sistema de Mapeamento de Endometriose", pageW / 2, pageH - margin, { align: "center" });
+
+    const fileName = `${VIEW_LABELS[viewType].replace(/[^a-zA-Z0-9]/g, "_")}.pdf`;
+    doc.save(fileName);
+    toast.success(`${VIEW_LABELS[viewType]} exportada como PDF A4`);
   };
 
   const handleSendToReport = () => {
