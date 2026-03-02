@@ -158,6 +158,15 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
   }), [undo, redo]);
 
   useEffect(() => {
+    setShowTextInput(false);
+    setTextInput('');
+    setShowRulerInput(false);
+    setRulerInput('');
+    setRulerLineData(null);
+    setStartPos(null);
+  }, [drawingTool]);
+
+  useEffect(() => {
     const imagePath = VIEW_IMAGES[viewType];
     if (imagePath) {
       const img = new Image();
@@ -442,9 +451,19 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
     }
   }, [editMode, drawingTool, getLesionAtPosition, onLesionSelect]);
 
+  const closeAllInputs = useCallback(() => {
+    setShowTextInput(false);
+    setTextInput('');
+    setShowRulerInput(false);
+    setRulerInput('');
+    setRulerLineData(null);
+  }, []);
+
   const handleDrawingPointerDown = useCallback((e: React.PointerEvent) => {
     if (drawingTool === 'select') return;
     
+    closeAllInputs();
+
     const drawingCanvas = drawingCanvasRef.current;
     if (!drawingCanvas) return;
 
@@ -485,7 +504,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       ctx.beginPath();
       ctx.moveTo(x, y);
     }
-  }, [drawingTool, drawingColor, drawingSize]);
+  }, [drawingTool, drawingColor, drawingSize, closeAllInputs]);
 
   const handleDrawingPointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDrawing || !startPos || drawingTool === 'select' || drawingTool === 'text') return;
@@ -647,7 +666,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       saveDrawing();
     }
     setIsDrawing(false);
-    if (drawingTool !== 'text') {
+    if (drawingTool !== 'text' && drawingTool !== 'ruler') {
       setStartPos(null);
     }
   }, [isDrawing, startPos, drawingTool, drawingColor, drawingSize, fillTexture, saveDrawing]);
@@ -724,11 +743,12 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       
       {showRulerInput && rulerLineData && (
         <div
-          className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-20"
+          className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-30"
           style={{ 
             left: `${(rulerLineData.sx + rulerLineData.ex) / 2}px`, 
             top: `${(rulerLineData.sy + rulerLineData.ey) / 2 - 40}px` 
           }}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-1">
             <input
