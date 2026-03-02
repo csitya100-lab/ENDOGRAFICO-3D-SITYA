@@ -21,6 +21,7 @@ import {
   Redo2,
   Maximize2,
   X,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useRef, useCallback, useEffect } from "react";
@@ -169,6 +170,19 @@ export default function Vistas2D() {
         observation: "",
       });
       toast.success(`${VIEW_LABELS[viewType]} capturada e adicionada ao relatório`);
+    }
+  };
+
+  const handleExportView = (viewType: ViewType) => {
+    const imgData = captureViewImage(viewType);
+    if (imgData) {
+      const link = document.createElement("a");
+      link.download = `${VIEW_LABELS[viewType].replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+      link.href = imgData;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success(`${VIEW_LABELS[viewType]} exportada com sucesso`);
     }
   };
 
@@ -328,6 +342,14 @@ export default function Vistas2D() {
             data-testid={`button-capture-${viewType}`}
           >
             <Camera className="w-4 h-4" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); handleExportView(viewType); }}
+            className="w-8 h-8 rounded-md flex items-center justify-center transition-all bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+            title="Exportar imagem PNG"
+            data-testid={`button-export-${viewType}`}
+          >
+            <Download className="w-4 h-4" />
           </button>
         </div>
 
