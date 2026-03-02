@@ -26,8 +26,9 @@ Minimalist UI: Removed thickness slider, export buttons, and unnecessary feature
     - **Toolbar 3D**: Reorganized with navigation/marking mode toggle, grouped buttons, and visual separators.
     - **Anatomy Panel**: Elements grouped by category with icons, improved hover/active states.
     - **Landing Page**: Enhanced CTA, CSS animations, professional subtitle badge.
-    - **2D Tools**: Active tool highlighting, pen size/color preview.
+    - **2D Tools**: Active tool highlighting, compact toolbar (no labels, no preview section).
     - **Report Drag-and-Drop**: Improved visual feedback and instructions.
+    - **Unified Color Palette**: Neutral slate/gray base + rose as primary accent. Action buttons use outline style; only main CTA (Relatório) uses rose fill. Landing page icons use rose on slate background instead of multi-color gradients.
     - **Dark Mode**: Consistent dark mode support across all pages.
     - **3D Visual Configuration**: Scene background (dark slate), 5 light sources (ambient, directional, fill, pink point, purple rim), material colors from medical guide, PBR materials with clearcoat (desktop only).
     - **5-View 3D Layout**: Changed to a 3-column 2-row grid, including a new Sagittal DIR→ESQ view.

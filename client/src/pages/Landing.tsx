@@ -84,8 +84,8 @@ export default function Landing() {
             style={{ animationDelay: '0ms' }}
             data-testid="card-3d"
           >
-            <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <MapPin className="w-7 h-7 text-white" />
+            <div className="w-14 h-14 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <MapPin className="w-7 h-7 text-rose-500" />
             </div>
             <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
               Modelo 3D
@@ -107,8 +107,8 @@ export default function Landing() {
             style={{ animationDelay: '150ms' }}
             data-testid="card-2d"
           >
-            <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Grid3x3 className="w-7 h-7 text-white" />
+            <div className="w-14 h-14 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Grid3x3 className="w-7 h-7 text-rose-500" />
             </div>
             <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
               Editor 2D
@@ -130,8 +130,8 @@ export default function Landing() {
             style={{ animationDelay: '300ms' }}
             data-testid="card-report"
           >
-            <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <FileText className="w-7 h-7 text-white" />
+            <div className="w-14 h-14 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <FileText className="w-7 h-7 text-rose-500" />
             </div>
             <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
               Relatório
@@ -178,11 +178,11 @@ export default function Landing() {
         <div className="text-center mt-12">
           <Button
             onClick={() => setLocation('/3d')}
-            className="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-pink-500/30 hover:scale-105 transition-transform"
+            className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-5 text-base font-medium"
             data-testid="button-start"
           >
-            Começar Agora
-            <ArrowRight className="w-5 h-5 ml-2" />
+            Começar
+            <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         </div>
       </main>

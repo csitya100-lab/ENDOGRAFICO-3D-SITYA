@@ -5,7 +5,6 @@ import { ViewType } from "@shared/3d/projections";
 import { Button } from "@/components/ui/button";
 import { useReportStore } from "@/lib/reportStore";
 import {
-  Grid3x3,
   ArrowLeft,
   Pen,
   Eraser,
@@ -243,64 +242,35 @@ export default function Vistas2D() {
         </div>
 
         {targetView && settings && settings.drawingTool !== "select" && (
-          <div className="flex items-center gap-3 ml-2 border-l border-gray-300 dark:border-slate-700 pl-3">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase text-slate-500 font-bold">Cor</span>
-              <input
-                type="color"
-                value={settings.drawingColor || "#ff0000"}
-                onChange={(e) => targetView && updateViewSetting(targetView, "drawingColor", e.target.value)}
-                className="w-8 h-8 cursor-pointer rounded bg-transparent border-none"
-                title="Cor"
-                data-testid="input-drawing-color"
-              />
-            </div>
-            <div className="flex flex-col gap-1 w-24">
-              <span className="text-[10px] uppercase text-slate-500 font-bold">Tamanho: {settings.drawingSize}px</span>
-              <input
-                type="range" min="1" max="20" step="1"
-                value={settings.drawingSize || 3}
-                onChange={(e) => targetView && updateViewSetting(targetView, "drawingSize", parseInt(e.target.value))}
-                className="w-full accent-pink-500"
-                title="Espessura"
-                data-testid="input-drawing-size"
-              />
-            </div>
+          <div className="flex items-center gap-2 ml-2 border-l border-gray-300 dark:border-slate-700 pl-3">
+            <input
+              type="color"
+              value={settings.drawingColor || "#ff0000"}
+              onChange={(e) => targetView && updateViewSetting(targetView, "drawingColor", e.target.value)}
+              className="w-7 h-7 cursor-pointer rounded bg-transparent border-none"
+              title="Cor"
+              data-testid="input-drawing-color"
+            />
+            <input
+              type="range" min="1" max="20" step="1"
+              value={settings.drawingSize || 3}
+              onChange={(e) => targetView && updateViewSetting(targetView, "drawingSize", parseInt(e.target.value))}
+              className="w-20 accent-pink-500"
+              title="Espessura"
+              data-testid="input-drawing-size"
+            />
             {["circle", "circle-filled"].includes(settings.drawingTool || "") && (
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] uppercase text-slate-500 font-bold">Preenchimento</span>
-                <select
-                  value={settings.fillTexture || "none"}
-                  onChange={(e) => targetView && updateViewSetting(targetView, "fillTexture", e.target.value as any)}
-                  className="bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-gray-900 dark:text-white"
-                  data-testid="select-fill-texture"
-                >
-                  <option value="none">Nenhum</option>
-                  <option value="solid">Solido</option>
-                  <option value="pattern">Hachura</option>
-                </select>
-              </div>
+              <select
+                value={settings.fillTexture || "none"}
+                onChange={(e) => targetView && updateViewSetting(targetView, "fillTexture", e.target.value as any)}
+                className="bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-gray-900 dark:text-white"
+                data-testid="select-fill-texture"
+              >
+                <option value="none">Nenhum</option>
+                <option value="solid">Sólido</option>
+                <option value="pattern">Hachura</option>
+              </select>
             )}
-          </div>
-        )}
-
-        {targetView && settings && !['select', 'eraser'].includes(settings.drawingTool) && (
-          <div className="flex items-center gap-3 px-3 py-1.5 bg-white dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm" data-testid="pen-preview">
-            <span className="text-[10px] uppercase text-gray-400 dark:text-slate-500 font-bold">Preview:</span>
-            <div className="flex items-center gap-2">
-              <div 
-                className="rounded-full" 
-                style={{ 
-                  width: `${Math.max(settings.drawingSize * 2, 6)}px`, 
-                  height: `${Math.max(settings.drawingSize * 2, 6)}px`,
-                  backgroundColor: settings.drawingColor,
-                  border: '1px solid rgba(0,0,0,0.1)'
-                }} 
-              />
-              <span className="text-xs text-gray-500 dark:text-slate-400">
-                {settings.drawingSize}px
-              </span>
-            </div>
           </div>
         )}
       </div>
@@ -400,23 +370,18 @@ export default function Vistas2D() {
       <AppSidebar />
 
       <main className="flex-1 ml-16 p-4 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => setLocation("/3d")}
-              className="text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
+              className="h-8 w-8 text-gray-400 dark:text-slate-500 hover:text-gray-900 dark:hover:text-white"
               data-testid="button-back-3d"
+              title="Voltar ao 3D"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar ao 3D
+              <ArrowLeft className="w-4 h-4" />
             </Button>
-            <div className="h-6 w-px bg-gray-300 dark:bg-slate-700" />
-            <h1 className="text-xl font-bold flex items-center gap-2">
-              <Grid3x3 className="w-5 h-5 text-pink-500" />
-              Editor 2D
-            </h1>
           </div>
 
           {renderToolbar(activeView, currentSettings)}
@@ -426,20 +391,20 @@ export default function Vistas2D() {
           {VIEW_TYPES.map((viewType) => renderCanvasCard(viewType))}
         </div>
 
-        <div className="mt-4 flex justify-center">
+        <div className="mt-3 flex justify-center">
           <Button
             onClick={handleSendToReport}
             disabled={selectedCount === 0}
-            className={`h-14 px-8 text-lg font-semibold transition-all ${
+            size="sm"
+            className={`h-9 px-5 text-xs font-medium transition-all ${
               selectedCount > 0
-                ? "bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 text-white"
-                : "bg-gray-300 dark:bg-slate-700 text-gray-500 dark:text-slate-400 cursor-not-allowed"
+                ? "bg-rose-600 hover:bg-rose-700 text-white"
+                : "bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed"
             }`}
             data-testid="button-send-to-report"
           >
-            <Send className="w-5 h-5 mr-3" />
-            Enviar {selectedCount > 0 ? `${selectedCount} ` : ""}Selecionada
-            {selectedCount !== 1 ? "s" : ""} ao Relatorio
+            <Send className="w-3.5 h-3.5 mr-1.5" />
+            Enviar{selectedCount > 0 ? ` ${selectedCount}` : ""} ao Relatório
           </Button>
         </div>
       </main>

@@ -6,8 +6,7 @@ import { AnatomyPanel } from '@/components/AnatomyPanel';
 import { useLesionStore, Severity, Lesion } from '@/lib/lesionStore';
 import { useReportStore } from '@/lib/reportStore';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Circle, RotateCcw, Clock, CheckCircle, AlertCircle, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair, X } from 'lucide-react';
+import { Circle, RotateCcw, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair, X } from 'lucide-react';
 import { export3DModelAsHtml } from '@/lib/export3DHtml';
 import { getAnatomyLabel } from '@/lib/anatomyStore';
 import { saveCaseToDb, isSupabaseConfigured } from '@/lib/caseDb';
@@ -161,64 +160,7 @@ export default function Home() {
   };
 
   const getLesionCount = (sev: Severity) => lesions.filter(l => l.severity === sev).length;
-  const lastLesion = lesions[lesions.length - 1];
   const lesionCount = lesions.length;
-
-  const getMappingStatus = () => {
-    if (lesionCount === 0) return 'Vazio';
-    if (lesionCount < 3) return 'Em andamento';
-    return 'Completo';
-  };
-
-  const getMappingStatusColor = (status: string) => {
-    switch (status) {
-      case 'Em andamento':
-        return 'bg-blue-500/10 text-blue-600 border-blue-300 dark:text-blue-400 dark:border-blue-500/50';
-      case 'Completo':
-        return 'bg-green-500/10 text-green-600 border-green-300 dark:text-green-400 dark:border-green-500/50';
-      case 'Vazio':
-        return 'bg-slate-500/10 text-slate-600 border-slate-300 dark:text-slate-400 dark:border-slate-500/50';
-      default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-300 dark:text-gray-400 dark:border-gray-500/50';
-    }
-  };
-
-  const getMappingStatusIcon = (status: string) => {
-    switch (status) {
-      case 'Em andamento':
-        return <Clock className="w-3.5 h-3.5" />;
-      case 'Completo':
-        return <CheckCircle className="w-3.5 h-3.5" />;
-      default:
-        return <AlertCircle className="w-3.5 h-3.5" />;
-    }
-  };
-
-  const getLesionStatus = (index: number) => {
-    return index === lesions.length - 1 ? 'Recém adicionada' : 'Mapeada';
-  };
-
-  const getLesionStatusColor = (status: string) => {
-    switch (status) {
-      case 'Recém adicionada':
-        return 'bg-blue-500/10 text-blue-600 border-blue-300 dark:text-blue-400 dark:border-blue-500/50';
-      case 'Mapeada':
-        return 'bg-green-500/10 text-green-600 border-green-300 dark:text-green-400 dark:border-green-500/50';
-      default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-300 dark:text-gray-400 dark:border-gray-500/50';
-    }
-  };
-
-  const getLesionStatusIcon = (status: string) => {
-    switch (status) {
-      case 'Recém adicionada':
-        return <Clock className="w-3 h-3" />;
-      case 'Mapeada':
-        return <CheckCircle className="w-3 h-3" />;
-      default:
-        return <AlertCircle className="w-3 h-3" />;
-    }
-  };
 
   return (
     <AppLayout>
@@ -371,21 +313,18 @@ export default function Home() {
               </div>
             </div>
 
-            <Badge variant="outline" className="font-mono hidden sm:flex bg-slate-100 border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300">
-              {lesionCount} lesão{lesionCount !== 1 ? 's' : ''}
-            </Badge>
-
             <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Button 
                 size="sm" 
+                variant="outline"
                 onClick={handleCapture3D}
-                className="text-xs h-9 bg-purple-600 text-white hover:bg-purple-700 border border-purple-500"
+                className="text-xs h-8 border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
                 data-testid="button-capture-3d"
               >
-                <Camera className="w-3.5 h-3.5 mr-1.5" />
-                Capturar 3D
+                <Camera className="w-3.5 h-3.5 mr-1" />
+                Capturar
               </Button>
               {draftImages3D.length > 0 && (
                 <div className="flex items-center gap-1">
@@ -394,7 +333,7 @@ export default function Home() {
                       <img
                         src={img.data}
                         alt={img.label}
-                        className="w-9 h-9 rounded border border-purple-300 object-cover"
+                        className="w-8 h-8 rounded border border-slate-300 dark:border-slate-600 object-cover"
                       />
                       <button
                         onClick={() => {
@@ -410,40 +349,29 @@ export default function Home() {
                   ))}
                 </div>
               )}
-            </div>
 
-            <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
-
-            <div className="flex items-center gap-2">
               <Button 
                 size="sm" 
+                variant="outline"
                 onClick={handleExportHtml}
                 disabled={isExporting}
-                className="text-xs h-9 bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-500"
+                className="text-xs h-8 border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
                 data-testid="button-export-3d"
               >
-                <Download className="w-3.5 h-3.5 mr-1.5" />
-                {isExporting ? 'Exportando...' : 'Exportar 3D'}
+                <Download className="w-3.5 h-3.5 mr-1" />
+                {isExporting ? '...' : 'Exportar'}
               </Button>
 
               <Button 
                 size="sm" 
+                variant="outline"
                 onClick={handleSaveAndShare}
                 disabled={isSaving}
-                className="text-xs h-9 bg-cyan-600 text-white hover:bg-cyan-700 border border-cyan-500"
+                className="text-xs h-8 border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
                 data-testid="button-save-share"
               >
-                <Share2 className="w-3.5 h-3.5 mr-1.5" />
-                {isSaving ? 'Salvando...' : 'Salvar & Compartilhar'}
-              </Button>
-
-              <Button 
-                size="sm" 
-                onClick={handleGenerateReport}
-                className="text-xs h-9 bg-indigo-600 text-white hover:bg-indigo-700 border border-indigo-500"
-              >
-                <FileText className="w-3.5 h-3.5 mr-1.5" />
-                Gerar Relatório
+                <Share2 className="w-3.5 h-3.5 mr-1" />
+                {isSaving ? '...' : 'Compartilhar'}
               </Button>
             </div>
 
@@ -451,12 +379,21 @@ export default function Home() {
 
             <Button 
               size="sm" 
-              onClick={handleClearLesions}
-              className="text-xs h-9 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 dark:border-red-500/30"
-              variant="outline"
+              onClick={handleGenerateReport}
+              className="text-xs h-8 bg-rose-600 text-white hover:bg-rose-700"
             >
-              <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-              Limpar
+              <FileText className="w-3.5 h-3.5 mr-1" />
+              Relatório
+            </Button>
+
+            <Button 
+              size="icon" 
+              variant="ghost"
+              onClick={handleClearLesions}
+              className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+              title="Limpar lesões"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
             </Button>
           </div>
         </header>
@@ -475,35 +412,26 @@ export default function Home() {
             />
           </main>
 
-          <aside className="w-72 border-l border-slate-200 bg-white shadow-sm overflow-y-auto dark:bg-slate-900 dark:border-slate-700">
+          <aside className="w-64 border-l border-slate-200 bg-white shadow-sm overflow-y-auto dark:bg-slate-900 dark:border-slate-700">
             <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-bold text-slate-900 tracking-wide dark:text-white">
-                  RESUMO DE MAPEAMENTO
-                </h2>
-                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-medium ${getMappingStatusColor(getMappingStatus())}`}>
-                  {getMappingStatusIcon(getMappingStatus())}
-                  {getMappingStatus()}
-                </div>
-              </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-200 dark:bg-red-500/10 dark:border-red-500/30">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50">
                   <span className="text-xs text-slate-600 flex items-center gap-2 font-medium dark:text-slate-300">
                     <Circle className="w-2.5 h-2.5 fill-red-500 text-red-500" />
                     Superficial
                   </span>
-                  <span className="text-sm font-bold text-red-600 dark:text-red-400">{getLesionCount('superficial')}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{getLesionCount('superficial')}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/30">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50">
                   <span className="text-xs text-slate-600 flex items-center gap-2 font-medium dark:text-slate-300">
                     <Circle className="w-2.5 h-2.5 fill-blue-500 text-blue-500" />
                     Profunda
                   </span>
-                  <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{getLesionCount('deep')}</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{getLesionCount('deep')}</span>
                 </div>
-                <div className="pt-2 border-t border-slate-200 mt-2 dark:border-slate-700">
-                  <span className="text-xs text-slate-600 font-medium dark:text-slate-300">Total de Lesões</span>
-                  <span className="text-2xl font-bold text-slate-900 block dark:text-white">{lesionCount}</span>
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
+                  <span className="text-xs text-slate-500 font-medium dark:text-slate-400">Total</span>
+                  <span className="text-lg font-bold text-slate-900 dark:text-white">{lesionCount}</span>
                 </div>
               </div>
             </div>
