@@ -115,22 +115,17 @@ function addImageInSlot(
   slot: Slot,
   origWidth: number,
   origHeight: number,
-  label: string,
-  observation: string,
-  compact: boolean
+  label: string
 ) {
-  const labelFontSize = compact ? 8 : 10;
-  const labelH = 4;
+  const labelH = 5;
 
-  pdf.setFontSize(labelFontSize);
+  pdf.setFontSize(10);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(80, 80, 80);
   pdf.text(label, slot.x, slot.y + labelH);
 
-  const hasObs = observation && observation.trim().length > 0;
-  const reservedForObs = hasObs ? (compact ? 8 : 14) : 0;
-  const imgTop = slot.y + labelH + 2;
-  const availableH = slot.h - labelH - 2 - reservedForObs;
+  const imgTop = slot.y + labelH + 1;
+  const availableH = slot.h - labelH - 1;
 
   if (availableH <= 0) return;
 
@@ -146,17 +141,6 @@ function addImageInSlot(
   const x = slot.x + (slot.w - imgW) / 2;
   const y = imgTop + (availableH - imgH) / 2;
   pdf.addImage(imgData, 'PNG', x, y, imgW, imgH);
-
-  if (hasObs) {
-    const obsFontSize = compact ? 7 : 9;
-    pdf.setFontSize(obsFontSize);
-    pdf.setFont('helvetica', 'normal');
-    pdf.setTextColor(60, 60, 60);
-    const obsY = slot.y + slot.h - reservedForObs + 3;
-    const maxLines = compact ? 2 : 3;
-    const lines = pdf.splitTextToSize(`Obs: ${observation}`, slot.w);
-    pdf.text(lines.slice(0, maxLines), slot.x, obsY);
-  }
 }
 
 function addHeader(pdf: jsPDF, pageNum: number, totalPages: number, metadata?: { patientName?: string; examDate?: string; patientId?: string }) {
@@ -211,7 +195,6 @@ export function generatePdfReport(
 
   const { slots, perPage } = computeLayout(images.length);
   const totalPages = Math.ceil(images.length / perPage);
-  const compact = perPage > 2;
 
   images.forEach((img, index) => {
     const pageIndex = Math.floor(index / perPage);
@@ -231,7 +214,7 @@ export function generatePdfReport(
     const origWidth = tempImg.width || 800;
     const origHeight = tempImg.height || 600;
 
-    addImageInSlot(pdf, img.data, slots[slotIndex], origWidth, origHeight, img.label, img.observation, compact);
+    addImageInSlot(pdf, img.data, slots[slotIndex], origWidth, origHeight, img.label);
   });
 
   pdf.save('relatorio-endomapper.pdf');
