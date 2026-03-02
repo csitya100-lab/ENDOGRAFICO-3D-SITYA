@@ -703,110 +703,121 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         />
       </div>
       
-      {showTextInput && startPos && (
-        <div
-          className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-30"
-          style={{ left: `${startPos.x}px`, top: `${startPos.y - 40}px` }}
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          <input
-            type="text"
-            value={textInput}
-            onChange={(e) => setTextInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && textInput.trim()) {
-                const drawingCanvas = drawingCanvasRef.current;
-                console.log('[TEXT DEBUG] Enter pressed', {
-                  textInput,
-                  startPos,
-                  drawingColor,
-                  drawingSize,
-                  hasCanvas: !!drawingCanvas,
-                  canvasW: drawingCanvas?.width,
-                  canvasH: drawingCanvas?.height,
-                });
-                if (drawingCanvas) {
-                  const ctx = drawingCanvas.getContext('2d');
-                  console.log('[TEXT DEBUG] ctx:', !!ctx);
-                  if (ctx) {
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.fillStyle = drawingColor;
-                    ctx.font = `${drawingSize * 4}px sans-serif`;
-                    ctx.fillText(textInput, startPos.x, startPos.y);
-                    console.log('[TEXT DEBUG] fillText done at', startPos.x, startPos.y);
-                  }
-                }
-                saveDrawing();
-                setShowTextInput(false);
-                setTextInput('');
-                setStartPos(null);
-              } else if (e.key === 'Escape') {
-                setShowTextInput(false);
-                setTextInput('');
-                setStartPos(null);
-              }
-            }}
-            autoFocus
-            className="w-36 px-2 py-1 text-sm bg-slate-900 border border-slate-500 text-white rounded"
-            placeholder="Digite o texto..."
-            data-testid="input-text-tool"
-          />
-        </div>
-      )}
-      
-      {showRulerInput && rulerLineData && (
-        <div
-          className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-30"
-          style={{ 
-            left: `${(rulerLineData.sx + rulerLineData.ex) / 2}px`, 
-            top: `${(rulerLineData.sy + rulerLineData.ey) / 2 - 40}px` 
-          }}
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center gap-1">
+      {showTextInput && startPos && (() => {
+        const confirmText = () => {
+          if (!textInput.trim()) {
+            setShowTextInput(false);
+            setTextInput('');
+            setStartPos(null);
+            return;
+          }
+          const drawingCanvas = drawingCanvasRef.current;
+          if (drawingCanvas) {
+            const ctx = drawingCanvas.getContext('2d');
+            if (ctx) {
+              ctx.globalCompositeOperation = 'source-over';
+              ctx.fillStyle = drawingColor;
+              ctx.font = `${drawingSize * 4}px sans-serif`;
+              ctx.fillText(textInput, startPos.x, startPos.y);
+            }
+          }
+          saveDrawing();
+          setShowTextInput(false);
+          setTextInput('');
+          setStartPos(null);
+        };
+        return (
+          <div
+            className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-30"
+            style={{ left: `${startPos.x}px`, top: `${startPos.y - 40}px` }}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
             <input
-              type="number"
-              value={rulerInput}
-              onChange={(e) => setRulerInput(e.target.value)}
+              type="text"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && rulerInput.trim()) {
-                  const drawingCanvas = drawingCanvasRef.current;
-                  if (drawingCanvas && rulerLineData) {
-                    const ctx = drawingCanvas.getContext('2d');
-                    if (ctx) {
-                      ctx.globalCompositeOperation = 'source-over';
-                      const midX = (rulerLineData.sx + rulerLineData.ex) / 2;
-                      const midY = (rulerLineData.sy + rulerLineData.ey) / 2;
-                      const text = `${rulerInput} mm`;
-                      ctx.font = 'bold 14px sans-serif';
-                      ctx.fillStyle = drawingColor;
-                      ctx.strokeStyle = '#000';
-                      ctx.lineWidth = 3;
-                      ctx.strokeText(text, midX + 5, midY - 5);
-                      ctx.fillText(text, midX + 5, midY - 5);
-                    }
-                  }
-                  saveDrawing();
-                  setShowRulerInput(false);
-                  setRulerInput('');
-                  setRulerLineData(null);
-                } else if (e.key === 'Escape') {
-                  setShowRulerInput(false);
-                  setRulerInput('');
-                  setRulerLineData(null);
+                if (e.key === 'Enter') confirmText();
+                else if (e.key === 'Escape') {
+                  setShowTextInput(false);
+                  setTextInput('');
+                  setStartPos(null);
                 }
               }}
+              onBlur={confirmText}
               autoFocus
-              className="w-20 px-2 py-1 text-sm bg-slate-900 border border-slate-500 text-white rounded"
-              placeholder="0"
-              step="0.1"
-              min="0"
-              data-testid="input-ruler-mm"
+              className="w-36 px-2 py-1 text-sm bg-slate-900 border border-slate-500 text-white rounded"
+              placeholder="Digite o texto..."
+              data-testid="input-text-tool"
             />
-            <span className="text-xs text-slate-300 font-mono">mm</span>
           </div>
-        </div>
-      )}
+        );
+      })()}
+      
+      {showRulerInput && rulerLineData && (() => {
+        const confirmRuler = () => {
+          if (!rulerInput.trim()) {
+            setShowRulerInput(false);
+            setRulerInput('');
+            setRulerLineData(null);
+            return;
+          }
+          const drawingCanvas = drawingCanvasRef.current;
+          if (drawingCanvas && rulerLineData) {
+            const ctx = drawingCanvas.getContext('2d');
+            if (ctx) {
+              ctx.globalCompositeOperation = 'source-over';
+              const midX = (rulerLineData.sx + rulerLineData.ex) / 2;
+              const midY = (rulerLineData.sy + rulerLineData.ey) / 2;
+              const text = `${rulerInput} mm`;
+              ctx.font = 'bold 14px sans-serif';
+              ctx.fillStyle = drawingColor;
+              ctx.strokeStyle = '#000';
+              ctx.lineWidth = 3;
+              ctx.strokeText(text, midX + 5, midY - 5);
+              ctx.fillText(text, midX + 5, midY - 5);
+            }
+          }
+          saveDrawing();
+          setShowRulerInput(false);
+          setRulerInput('');
+          setRulerLineData(null);
+        };
+        return (
+          <div
+            className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-30"
+            style={{ 
+              left: `${(rulerLineData.sx + rulerLineData.ex) / 2}px`, 
+              top: `${(rulerLineData.sy + rulerLineData.ey) / 2 - 40}px` 
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                value={rulerInput}
+                onChange={(e) => setRulerInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') confirmRuler();
+                  else if (e.key === 'Escape') {
+                    setShowRulerInput(false);
+                    setRulerInput('');
+                    setRulerLineData(null);
+                  }
+                }}
+                onBlur={confirmRuler}
+                autoFocus
+                className="w-20 px-2 py-1 text-sm bg-slate-900 border border-slate-500 text-white rounded"
+                placeholder="0"
+                step="0.1"
+                min="0"
+                data-testid="input-ruler-mm"
+              />
+              <span className="text-xs text-slate-300 font-mono">mm</span>
+            </div>
+          </div>
+        );
+      })()}
 
       {hoveredLesionId && !isDragging && drawingTool === 'select' && (
         <div className="absolute bottom-2 left-2 bg-black/80 text-white text-xs px-2 py-1 rounded pointer-events-none z-10">
