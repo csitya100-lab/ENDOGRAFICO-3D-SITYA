@@ -716,13 +716,24 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
             onKeyDown={(e) => {
               if (e.key === 'Enter' && textInput.trim()) {
                 const drawingCanvas = drawingCanvasRef.current;
+                console.log('[TEXT DEBUG] Enter pressed', {
+                  textInput,
+                  startPos,
+                  drawingColor,
+                  drawingSize,
+                  hasCanvas: !!drawingCanvas,
+                  canvasW: drawingCanvas?.width,
+                  canvasH: drawingCanvas?.height,
+                });
                 if (drawingCanvas) {
                   const ctx = drawingCanvas.getContext('2d');
+                  console.log('[TEXT DEBUG] ctx:', !!ctx);
                   if (ctx) {
                     ctx.globalCompositeOperation = 'source-over';
                     ctx.fillStyle = drawingColor;
                     ctx.font = `${drawingSize * 4}px sans-serif`;
                     ctx.fillText(textInput, startPos.x, startPos.y);
+                    console.log('[TEXT DEBUG] fillText done at', startPos.x, startPos.y);
                   }
                 }
                 saveDrawing();
