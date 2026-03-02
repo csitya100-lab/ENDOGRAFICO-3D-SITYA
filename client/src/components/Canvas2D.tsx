@@ -647,7 +647,9 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       saveDrawing();
     }
     setIsDrawing(false);
-    setStartPos(null);
+    if (drawingTool !== 'text') {
+      setStartPos(null);
+    }
   }, [isDrawing, startPos, drawingTool, drawingColor, drawingSize, fillTexture, saveDrawing]);
 
   return (
@@ -683,8 +685,9 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       
       {showTextInput && startPos && (
         <div
-          className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-20"
-          style={{ left: `${startPos.x}px`, top: `${startPos.y}px` }}
+          className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-30"
+          style={{ left: `${startPos.x}px`, top: `${startPos.y - 40}px` }}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           <input
             type="text"
@@ -705,11 +708,16 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
                 setShowTextInput(false);
                 setTextInput('');
                 setStartPos(null);
+              } else if (e.key === 'Escape') {
+                setShowTextInput(false);
+                setTextInput('');
+                setStartPos(null);
               }
             }}
             autoFocus
-            className="w-24 px-2 py-1 text-sm bg-slate-900 border border-slate-500 text-white rounded"
-            placeholder="Texto..."
+            className="w-36 px-2 py-1 text-sm bg-slate-900 border border-slate-500 text-white rounded"
+            placeholder="Digite o texto..."
+            data-testid="input-text-tool"
           />
         </div>
       )}
