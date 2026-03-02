@@ -4,11 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useReportStore } from '@/lib/reportStore';
 import { generatePdfReport } from '@/lib/pdfGenerator';
-import { ArrowLeft, FileDown, Printer, Trash2, GripVertical, ChevronUp, ChevronDown, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileDown, Printer, Trash2, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { toast } from 'sonner';
-import { useLesionStore, Lesion } from '@/lib/lesionStore';
-import { getAnatomyLabel } from '@/lib/anatomyStore';
 
 export default function PreviewReport() {
   const [, setLocation] = useLocation();
@@ -28,39 +26,6 @@ export default function PreviewReport() {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropTarget, setDropTarget] = useState<number | null>(null);
   const dragNodeRef = useRef<HTMLDivElement | null>(null);
-  const [aiFindings, setAiFindings] = useState('');
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
-  const { lesions } = useLesionStore();
-
-  const handleGenerateFindings = async () => {
-    if (lesions.length === 0) {
-      toast.warning('Adicione lesões no modelo 3D antes de gerar achados.');
-      return;
-    }
-    setIsGeneratingAI(true);
-    try {
-      const lesionData = lesions.map((l: Lesion, idx: number) => ({
-        name: `Lesão ${String.fromCharCode(65 + idx)}`,
-        location: l.location ? getAnatomyLabel(l.location) : 'Região não especificada',
-        severity: l.severity,
-      }));
-      const response = await fetch('/api/generate-findings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lesions: lesionData }),
-      });
-      if (!response.ok) throw new Error('Falha na geração');
-      const data = await response.json();
-      setAiFindings(data.findings);
-      toast.success('Achados gerados com sucesso!');
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Erro ao gerar achados. Tente novamente.');
-    } finally {
-      setIsGeneratingAI(false);
-    }
-  };
-
   const handleExportPdf = () => {
     generatePdfReport(pdfImages, { patientName, examDate, patientId });
   };
@@ -246,38 +211,7 @@ export default function PreviewReport() {
                 </div>
               </div>
 
-              <div className="border-t border-gray-100 pt-6 mt-2 dark:border-slate-700">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300">Achados (IA)</h3>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleGenerateFindings}
-                    disabled={isGeneratingAI || lesions.length === 0}
-                    className="text-purple-600 border-purple-200 hover:bg-purple-50 dark:text-purple-400 dark:border-purple-500/30 dark:hover:bg-purple-500/10"
-                    data-testid="button-generate-findings"
-                  >
-                    {isGeneratingAI ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Sparkles className="w-4 h-4 mr-2" />
-                    )}
-                    {isGeneratingAI ? 'Gerando...' : 'Gerar com IA'}
-                  </Button>
-                </div>
-                {aiFindings && (
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 print:bg-white print:border-gray-200 dark:bg-purple-500/10 dark:border-purple-500/30" data-testid="text-ai-findings">
-                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap dark:text-slate-300">{aiFindings}</p>
-                  </div>
-                )}
-                {!aiFindings && !isGeneratingAI && (
-                  <p className="text-xs text-gray-400 italic dark:text-slate-500">
-                    Clique em "Gerar com IA" para criar uma descrição dos achados baseada nas lesões mapeadas.
-                  </p>
-                )}
-              </div>
-
-              <div className="text-center mb-6 print:mb-4 border-t border-gray-100 pt-6 dark:border-slate-700">
+              <div className="text-center mb-6 print:mb-4 border-t border-gray-100 pt-6 mt-2 dark:border-slate-700">
                 <h2 className="text-2xl font-bold text-gray-900 print:text-xl dark:text-white">EndoMapper</h2>
                 <p className="text-gray-500 text-sm dark:text-slate-400">Mapeamento de Lesões de Endometriose</p>
                 <p className="text-gray-400 text-xs mt-1 dark:text-slate-500">
