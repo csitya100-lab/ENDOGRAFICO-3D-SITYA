@@ -211,19 +211,6 @@ export default function PreviewReport() {
                 </div>
               </div>
 
-              <div className="text-center mb-6 print:mb-4 border-t border-gray-100 pt-6 mt-2 dark:border-slate-700">
-                <h2 className="text-2xl font-bold text-gray-900 print:text-xl dark:text-white">EndoMapper</h2>
-                <p className="text-gray-500 text-sm dark:text-slate-400">Mapeamento de Lesões de Endometriose</p>
-                <p className="text-gray-400 text-xs mt-1 dark:text-slate-500">
-                  {new Date().toLocaleDateString('pt-BR', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </p>
-              </div>
-
               {hasImages && (
                 <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mb-3 print:hidden dark:text-slate-500">
                   <GripVertical className="w-3.5 h-3.5" />
