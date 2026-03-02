@@ -79,6 +79,9 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
   const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
   const [textInput, setTextInput] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
+  const [showRulerInput, setShowRulerInput] = useState(false);
+  const [rulerInput, setRulerInput] = useState('');
+  const [rulerLineData, setRulerLineData] = useState<{ sx: number; sy: number; ex: number; ey: number } | null>(null);
   const drawingRestoredRef = useRef(false);
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
   const drawingBaseRef = useRef<ImageData | null>(null);
@@ -536,7 +539,6 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         ctx.lineTo(x, y);
         ctx.stroke();
       } else if (drawingTool === 'ruler') {
-        const distance = Math.sqrt(Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2));
         ctx.beginPath();
         ctx.moveTo(startPos.x, startPos.y);
         ctx.lineTo(x, y);
@@ -554,15 +556,6 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         ctx.moveTo(x + markerSize, y - markerSize);
         ctx.lineTo(x - markerSize, y + markerSize);
         ctx.stroke();
-        const midX = (startPos.x + x) / 2;
-        const midY = (startPos.y + y) / 2;
-        const text = `${distance.toFixed(1)}px`;
-        ctx.font = '14px sans-serif';
-        ctx.fillStyle = drawingColor;
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 3;
-        ctx.strokeText(text, midX + 5, midY - 5);
-        ctx.fillText(text, midX + 5, midY - 5);
       } else {
         const radius = Math.sqrt(Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2));
         ctx.beginPath();
@@ -617,7 +610,6 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
             ctx.lineTo(x, y);
             ctx.stroke();
           } else if (drawingTool === 'ruler') {
-            const distance = Math.sqrt(Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2));
             ctx.beginPath();
             ctx.moveTo(startPos.x, startPos.y);
             ctx.lineTo(x, y);
@@ -635,15 +627,9 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
             ctx.moveTo(x + markerSize, y - markerSize);
             ctx.lineTo(x - markerSize, y + markerSize);
             ctx.stroke();
-            const midX = (startPos.x + x) / 2;
-            const midY = (startPos.y + y) / 2;
-            const text = `${distance.toFixed(1)}px`;
-            ctx.font = '14px sans-serif';
-            ctx.fillStyle = drawingColor;
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 3;
-            ctx.strokeText(text, midX + 5, midY - 5);
-            ctx.fillText(text, midX + 5, midY - 5);
+            setRulerLineData({ sx: startPos.x, sy: startPos.y, ex: x, ey: y });
+            setRulerInput('');
+            setShowRulerInput(true);
           } else {
             const radius = Math.sqrt(Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2));
             ctx.beginPath();
@@ -728,6 +714,58 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         </div>
       )}
       
+      {showRulerInput && rulerLineData && (
+        <div
+          className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-20"
+          style={{ 
+            left: `${(rulerLineData.sx + rulerLineData.ex) / 2}px`, 
+            top: `${(rulerLineData.sy + rulerLineData.ey) / 2 - 40}px` 
+          }}
+        >
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              value={rulerInput}
+              onChange={(e) => setRulerInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && rulerInput.trim()) {
+                  const drawingCanvas = drawingCanvasRef.current;
+                  if (drawingCanvas && rulerLineData) {
+                    const ctx = drawingCanvas.getContext('2d');
+                    if (ctx) {
+                      const midX = (rulerLineData.sx + rulerLineData.ex) / 2;
+                      const midY = (rulerLineData.sy + rulerLineData.ey) / 2;
+                      const text = `${rulerInput} mm`;
+                      ctx.font = 'bold 14px sans-serif';
+                      ctx.fillStyle = drawingColor;
+                      ctx.strokeStyle = '#000';
+                      ctx.lineWidth = 3;
+                      ctx.strokeText(text, midX + 5, midY - 5);
+                      ctx.fillText(text, midX + 5, midY - 5);
+                    }
+                  }
+                  saveDrawing();
+                  setShowRulerInput(false);
+                  setRulerInput('');
+                  setRulerLineData(null);
+                } else if (e.key === 'Escape') {
+                  setShowRulerInput(false);
+                  setRulerInput('');
+                  setRulerLineData(null);
+                }
+              }}
+              autoFocus
+              className="w-20 px-2 py-1 text-sm bg-slate-900 border border-slate-500 text-white rounded"
+              placeholder="0"
+              step="0.1"
+              min="0"
+              data-testid="input-ruler-mm"
+            />
+            <span className="text-xs text-slate-300 font-mono">mm</span>
+          </div>
+        </div>
+      )}
+
       {hoveredLesionId && !isDragging && drawingTool === 'select' && (
         <div className="absolute bottom-2 left-2 bg-black/80 text-white text-xs px-2 py-1 rounded pointer-events-none z-10">
           {editMode ? 'Arraste para mover · Duplo-clique para editar' : 'Clique para selecionar'}
