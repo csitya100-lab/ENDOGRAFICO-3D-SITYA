@@ -413,15 +413,10 @@ export default function Vistas2D() {
               Voltar ao 3D
             </Button>
             <div className="h-6 w-px bg-gray-300 dark:bg-slate-700" />
-            <div>
-              <h1 className="text-xl font-bold flex items-center gap-2">
-                <Grid3x3 className="w-5 h-5 text-pink-500" />
-                Editor 2D
-              </h1>
-              <p className="text-gray-500 dark:text-slate-400 text-xs">
-                Clique em uma figura para editar, use o botao de tela cheia para ampliar
-              </p>
-            </div>
+            <h1 className="text-xl font-bold flex items-center gap-2">
+              <Grid3x3 className="w-5 h-5 text-pink-500" />
+              Editor 2D
+            </h1>
           </div>
 
           {renderToolbar(activeView, currentSettings)}
