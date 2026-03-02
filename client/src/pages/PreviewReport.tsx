@@ -220,7 +220,7 @@ export default function PreviewReport() {
                     value={patientName}
                     onChange={(e) => setPatientName(e.target.value)}
                     placeholder="Digite o nome completo"
-                    className="border-gray-200 focus:ring-pink-500 focus:border-pink-500 print:border-transparent print:p-0 print:text-lg print:font-bold dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500"
+                    className="border-gray-200 text-gray-900 focus:ring-pink-500 focus:border-pink-500 print:border-transparent print:p-0 print:text-lg print:font-bold dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500"
                     data-testid="input-patient-name"
                   />
                 </div>
@@ -231,7 +231,7 @@ export default function PreviewReport() {
                     value={patientId}
                     onChange={(e) => setPatientId(e.target.value)}
                     placeholder="Ex: 12345"
-                    className="border-gray-200 focus:ring-pink-500 focus:border-pink-500 print:border-transparent print:p-0 dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500"
+                    className="border-gray-200 text-gray-900 focus:ring-pink-500 focus:border-pink-500 print:border-transparent print:p-0 dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500"
                     data-testid="input-patient-id"
                   />
                 </div>
@@ -242,7 +242,7 @@ export default function PreviewReport() {
                     type="date"
                     value={examDate}
                     onChange={(e) => setExamDate(e.target.value)}
-                    className="border-gray-200 focus:ring-pink-500 focus:border-pink-500 print:border-transparent print:p-0 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    className="border-gray-200 text-gray-900 focus:ring-pink-500 focus:border-pink-500 print:border-transparent print:p-0 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                     data-testid="input-exam-date"
                   />
                 </div>
