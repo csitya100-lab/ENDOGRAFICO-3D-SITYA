@@ -1,6 +1,5 @@
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useReportStore } from '@/lib/reportStore';
@@ -15,7 +14,6 @@ export default function PreviewReport() {
   const [, setLocation] = useLocation();
   const { 
     pdfImages, 
-    updatePdfImageObservation, 
     removePdfImage, 
     clearPdfImages,
     reorderPdfImages,
@@ -373,21 +371,6 @@ export default function PreviewReport() {
                       />
                     </div>
 
-                    <div className="border-t border-gray-200 p-3 bg-gray-50 dark:border-slate-700 dark:bg-slate-800/50">
-                      <label className="block text-xs font-medium text-gray-600 mb-1 dark:text-slate-400">
-                        Observações
-                      </label>
-                      <Textarea
-                        value={image.observation}
-                        onChange={(e) => updatePdfImageObservation(index, e.target.value)}
-                        placeholder="Adicione observações..."
-                        className="min-h-[60px] text-sm resize-none print:hidden bg-white text-black border-gray-300 focus:border-pink-500 placeholder:text-gray-400 dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500"
-                        data-testid={`textarea-observation-${index}`}
-                      />
-                      <p className="hidden print:block text-sm text-black bg-white min-h-[40px]">
-                        {image.observation || "—"}
-                      </p>
-                    </div>
                   </div>
                 ))}
               </div>
