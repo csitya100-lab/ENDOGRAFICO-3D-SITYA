@@ -19,94 +19,15 @@ interface Slot {
   h: number;
 }
 
-function computeLayout(totalImages: number): { slots: Slot[]; perPage: number } {
-  if (totalImages === 1) {
-    return {
-      perPage: 1,
-      slots: [{ x: MARGIN, y: CONTENT_TOP, w: CONTENT_WIDTH, h: CONTENT_HEIGHT }],
-    };
-  }
-
-  if (totalImages === 2) {
-    const slotH = (CONTENT_HEIGHT - GAP) / 2;
-    return {
-      perPage: 2,
-      slots: [
-        { x: MARGIN, y: CONTENT_TOP, w: CONTENT_WIDTH, h: slotH },
-        { x: MARGIN, y: CONTENT_TOP + slotH + GAP, w: CONTENT_WIDTH, h: slotH },
-      ],
-    };
-  }
-
-  if (totalImages === 3) {
-    const topH = CONTENT_HEIGHT * 0.48;
-    const bottomH = CONTENT_HEIGHT * 0.48;
-    const bottomY = CONTENT_TOP + topH + GAP;
-    const halfW = (CONTENT_WIDTH - GAP) / 2;
-    return {
-      perPage: 3,
-      slots: [
-        { x: MARGIN, y: CONTENT_TOP, w: CONTENT_WIDTH, h: topH },
-        { x: MARGIN, y: bottomY, w: halfW, h: bottomH },
-        { x: MARGIN + halfW + GAP, y: bottomY, w: halfW, h: bottomH },
-      ],
-    };
-  }
-
-  if (totalImages <= 4) {
-    const cols = 2;
-    const rows = 2;
-    const slotW = (CONTENT_WIDTH - GAP) / cols;
-    const slotH = (CONTENT_HEIGHT - GAP) / rows;
-    const slots: Slot[] = [];
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        slots.push({
-          x: MARGIN + c * (slotW + GAP),
-          y: CONTENT_TOP + r * (slotH + GAP),
-          w: slotW,
-          h: slotH,
-        });
-      }
-    }
-    return { perPage: 4, slots };
-  }
-
-  if (totalImages <= 6) {
-    const cols = 2;
-    const rows = 3;
-    const slotW = (CONTENT_WIDTH - GAP) / cols;
-    const slotH = (CONTENT_HEIGHT - GAP * (rows - 1)) / rows;
-    const slots: Slot[] = [];
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        slots.push({
-          x: MARGIN + c * (slotW + GAP),
-          y: CONTENT_TOP + r * (slotH + GAP),
-          w: slotW,
-          h: slotH,
-        });
-      }
-    }
-    return { perPage: 6, slots };
-  }
-
-  const cols = 2;
-  const rows = 3;
-  const slotW = (CONTENT_WIDTH - GAP) / cols;
-  const slotH = (CONTENT_HEIGHT - GAP * (rows - 1)) / rows;
-  const slots: Slot[] = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      slots.push({
-        x: MARGIN + c * (slotW + GAP),
-        y: CONTENT_TOP + r * (slotH + GAP),
-        w: slotW,
-        h: slotH,
-      });
-    }
-  }
-  return { perPage: 6, slots };
+function computeLayout(): { slots: Slot[]; perPage: number } {
+  const slotH = (CONTENT_HEIGHT - GAP) / 2;
+  return {
+    perPage: 2,
+    slots: [
+      { x: MARGIN, y: CONTENT_TOP, w: CONTENT_WIDTH, h: slotH },
+      { x: MARGIN, y: CONTENT_TOP + slotH + GAP, w: CONTENT_WIDTH, h: slotH },
+    ],
+  };
 }
 
 function addImageInSlot(
@@ -193,7 +114,7 @@ export function generatePdfReport(
 
   const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
 
-  const { slots, perPage } = computeLayout(images.length);
+  const { slots, perPage } = computeLayout();
   const totalPages = Math.ceil(images.length / perPage);
 
   images.forEach((img, index) => {
