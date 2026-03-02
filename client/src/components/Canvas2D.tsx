@@ -600,6 +600,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
             ctx.putImageData(drawingBaseRef.current, 0, 0);
           }
           
+          ctx.globalCompositeOperation = 'source-over';
           ctx.lineWidth = drawingSize;
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
@@ -718,6 +719,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
                 if (drawingCanvas) {
                   const ctx = drawingCanvas.getContext('2d');
                   if (ctx) {
+                    ctx.globalCompositeOperation = 'source-over';
                     ctx.fillStyle = drawingColor;
                     ctx.font = `${drawingSize * 4}px sans-serif`;
                     ctx.fillText(textInput, startPos.x, startPos.y);
@@ -761,6 +763,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
                   if (drawingCanvas && rulerLineData) {
                     const ctx = drawingCanvas.getContext('2d');
                     if (ctx) {
+                      ctx.globalCompositeOperation = 'source-over';
                       const midX = (rulerLineData.sx + rulerLineData.ex) / 2;
                       const midY = (rulerLineData.sy + rulerLineData.ey) / 2;
                       const text = `${rulerInput} mm`;
