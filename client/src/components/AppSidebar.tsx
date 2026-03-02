@@ -46,22 +46,10 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-const WORKFLOW_STEPS = [
-  { route: '/3d', label: '3D' },
-  { route: '/vistas-2d', label: '2D' },
-  { route: '/preview-report', label: 'Relatório' },
-];
-
-function getWorkflowStep(location: string): number {
-  const idx = WORKFLOW_STEPS.findIndex(s => s.route === location);
-  return idx;
-}
-
 export default function AppSidebar() {
   const [location, setLocation] = useLocation();
   const { theme, toggleTheme } = useThemeStore();
   const lesionCount = useLesionStore((s) => s.lesions.length);
-  const currentStep = getWorkflowStep(location);
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-16 bg-slate-900 dark:bg-slate-900 flex flex-col items-center py-4 z-50">
@@ -109,42 +97,6 @@ export default function AppSidebar() {
           );
         })}
       </nav>
-
-      <div className="flex flex-col items-center gap-1 w-full px-2 py-3" data-testid="flow-progress">
-        {WORKFLOW_STEPS.map((step, idx) => {
-          const isCompleted = currentStep > idx;
-          const isCurrentStep = currentStep === idx;
-          const isFuture = currentStep < 0 || currentStep < idx;
-
-          return (
-            <div key={step.route} className="flex flex-col items-center">
-              {idx > 0 && (
-                <div
-                  className={`w-0.5 h-3 ${isCompleted ? 'bg-green-500' : 'bg-slate-700'}`}
-                />
-              )}
-              <div
-                className={`
-                  w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all
-                  ${isCompleted
-                    ? 'bg-green-500 text-white'
-                    : isCurrentStep
-                      ? 'bg-pink-500 text-white ring-2 ring-pink-400/50'
-                      : 'bg-slate-700 text-slate-400'
-                  }
-                `}
-              >
-                {idx + 1}
-              </div>
-              {idx < WORKFLOW_STEPS.length - 1 && (
-                <div
-                  className={`w-0.5 h-3 ${isCompleted ? 'bg-green-500' : 'bg-slate-700'}`}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
 
       <div className="flex flex-col items-center gap-1 w-full px-2 pt-4 border-t border-slate-800">
         <Tooltip delayDuration={100}>
