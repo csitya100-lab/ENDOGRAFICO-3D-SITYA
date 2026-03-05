@@ -357,11 +357,12 @@ export default function PublicReport() {
                 </h2>
               </div>
               <div className="p-4">
-                <div className="grid grid-cols-3 gap-3">
-                  {(["sagittal", "coronal", "posterior"] as const).map(
+                <div className="grid grid-cols-2 gap-3">
+                  {(["sagittal-avf", "sagittal-rl", "coronal", "posterior"] as const).map(
                     (view) => {
                       const viewLabels: Record<string, string> = {
-                        sagittal: "Sagittal",
+                        "sagittal-avf": "Sagittal (AVF)",
+                        "sagittal-rl": "Sagittal (RL)",
                         coronal: "Coronal",
                         posterior: "Posterior",
                       };

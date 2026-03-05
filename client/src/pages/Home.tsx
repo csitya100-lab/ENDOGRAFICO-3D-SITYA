@@ -96,11 +96,11 @@ export default function Home() {
     }
   };
 
-  const { 
-    draftImages2D, 
+  const {
+    draftImages2D,
     draftImages3D,
-    createReport, 
-    clearDraftImages2D, 
+    createReport,
+    clearDraftImages2D,
     clearDraftImages3D,
     addDraftImage3D,
     removeDraftImage3D
@@ -118,11 +118,11 @@ export default function Home() {
 
   const handleGenerateReport = () => {
     uterusRef.current?.captureAllViews();
-    
+
     const currentImages2D = useReportStore.getState().draftImages2D;
     const hasAny2D = currentImages2D['sagittal-avf'] || currentImages2D['sagittal-rvf'] || currentImages2D['coronal'] || currentImages2D['posterior'];
     const hasAny3D = draftImages3D.length > 0;
-    
+
     if (!hasAny2D && !hasAny3D) {
       const proceed = confirm('Nenhuma imagem foi capturada. Deseja continuar mesmo assim?');
       if (!proceed) return;
@@ -134,12 +134,14 @@ export default function Home() {
       examDate: examInfo.date,
       examType: 'Mapeamento EndoMapper',
       images2D: {
-        sagittal: currentImages2D['sagittal-avf'] || currentImages2D['sagittal-rvf'] || "",
+        'sagittal-avf': currentImages2D['sagittal-avf'] || "",
+        'sagittal-rl': currentImages2D['sagittal-rvf'] || "",
         coronal: currentImages2D['coronal'] || "",
         posterior: currentImages2D['posterior'] || "",
       },
       imageNotes: {
-        sagittal: "",
+        'sagittal-avf': "",
+        'sagittal-rl': "",
         coronal: "",
         posterior: "",
       },
@@ -168,12 +170,12 @@ export default function Home() {
         <header className="flex-none h-16 border-b border-slate-200 bg-white shadow-sm px-6 flex items-center justify-between z-20 dark:bg-slate-900 dark:border-slate-700 dark:shadow-none">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-3">
-               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
-                 <span className="text-white font-bold text-sm">3D</span>
-               </div>
-               <h1 className="text-xl font-bold tracking-tight text-slate-900 font-sans dark:text-white">
-                 Endo<span className="text-rose-600 dark:text-rose-400">Mapper</span>
-               </h1>
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+                <span className="text-white font-bold text-sm">3D</span>
+              </div>
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 font-sans dark:text-white">
+                Endo<span className="text-rose-600 dark:text-rose-400">Mapper</span>
+              </h1>
             </div>
 
             <div className="h-8 w-px bg-slate-200 hidden sm:block dark:bg-slate-700" />
@@ -181,11 +183,10 @@ export default function Home() {
             <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 dark:bg-slate-800 dark:border-slate-700">
               <button
                 onClick={() => setInteractionMode('navigate')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-                  interactionMode === 'navigate' 
-                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-slate-700 dark:text-white dark:border-slate-600' 
+                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${interactionMode === 'navigate'
+                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-slate-700 dark:text-white dark:border-slate-600'
                     : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'
-                }`}
+                  }`}
                 data-testid="button-mode-navigate"
                 aria-label="Modo navegação"
               >
@@ -194,11 +195,10 @@ export default function Home() {
               </button>
               <button
                 onClick={() => setInteractionMode('add')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
-                  interactionMode === 'add' 
-                    ? 'bg-pink-100 text-pink-700 border border-pink-300 dark:bg-pink-500/20 dark:text-pink-400 dark:border-pink-500/50' 
+                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${interactionMode === 'add'
+                    ? 'bg-pink-100 text-pink-700 border border-pink-300 dark:bg-pink-500/20 dark:text-pink-400 dark:border-pink-500/50'
                     : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'
-                }`}
+                  }`}
                 data-testid="button-mode-add"
                 aria-label="Modo marcação de lesão"
               >
@@ -214,8 +214,8 @@ export default function Home() {
                 onClick={() => setSeverity('superficial')}
                 className={`
                   px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all
-                  ${severity === 'superficial' 
-                    ? 'bg-red-100 text-red-700 border border-red-300 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/50' 
+                  ${severity === 'superficial'
+                    ? 'bg-red-100 text-red-700 border border-red-300 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/50'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'}
                 `}
               >
@@ -226,8 +226,8 @@ export default function Home() {
                 onClick={() => setSeverity('deep')}
                 className={`
                   px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all
-                  ${severity === 'deep' 
-                    ? 'bg-blue-100 text-blue-700 border border-blue-300 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500/50' 
+                  ${severity === 'deep'
+                    ? 'bg-blue-100 text-blue-700 border border-blue-300 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500/50'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'}
                 `}
               >
@@ -316,8 +316,8 @@ export default function Home() {
             <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
 
             <div className="flex items-center gap-1.5">
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 variant="outline"
                 onClick={handleCapture3D}
                 className="text-xs h-8 border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -350,8 +350,8 @@ export default function Home() {
                 </div>
               )}
 
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 variant="outline"
                 onClick={handleExportHtml}
                 disabled={isExporting}
@@ -362,8 +362,8 @@ export default function Home() {
                 {isExporting ? '...' : 'Exportar'}
               </Button>
 
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 variant="outline"
                 onClick={handleSaveAndShare}
                 disabled={isSaving}
@@ -377,8 +377,8 @@ export default function Home() {
 
             <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
 
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               onClick={handleGenerateReport}
               className="text-xs h-8 bg-rose-600 text-white hover:bg-rose-700"
             >
@@ -386,8 +386,8 @@ export default function Home() {
               Relatório
             </Button>
 
-            <Button 
-              size="icon" 
+            <Button
+              size="icon"
               variant="ghost"
               onClick={handleClearLesions}
               className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
@@ -400,15 +400,15 @@ export default function Home() {
 
         <div className="flex-1 flex overflow-hidden">
           <main className="flex-1 relative">
-            <Uterus3D 
+            <Uterus3D
               ref={uterusRef}
               severity={severity}
               markerSize={markerSize}
               markerColor={markerColor}
               markerType="circle"
               interactionMode={interactionMode}
-              onLesionCountChange={() => {}}
-              onLesionsUpdate={() => {}}
+              onLesionCountChange={() => { }}
+              onLesionsUpdate={() => { }}
             />
           </main>
 

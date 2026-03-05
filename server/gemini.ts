@@ -1,9 +1,16 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
-});
+let _openai: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({
+      apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY || "dummy-key",
+      baseURL: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
+    });
+  }
+  return _openai;
+}
 
 export async function generateFindings(lesions: Array<{
   name: string;
@@ -12,8 +19,8 @@ export async function generateFindings(lesions: Array<{
 }>) {
   const superficialCount = lesions.filter(l => l.severity === 'superficial').length;
   const deepCount = lesions.filter(l => l.severity === 'deep').length;
-  
-  const lesionDescriptions = lesions.map(l => 
+
+  const lesionDescriptions = lesions.map(l =>
     `- ${l.name}: ${l.location} (${l.severity === 'superficial' ? 'superficial' : 'profunda'})`
   ).join('\n');
 
@@ -29,7 +36,7 @@ ${lesionDescriptions}
 
 Gere um parágrafo descritivo médico conciso (3-5 frases) descrevendo os achados, mencionando localização, severidade e padrão de distribuição das lesões. Use terminologia médica adequada. Não inclua recomendações de tratamento, apenas descreva os achados.`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAIClient().chat.completions.create({
     model: "gemini-2.5-flash",
     messages: [{ role: "user", content: prompt }],
     max_tokens: 8192,

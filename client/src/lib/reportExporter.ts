@@ -87,7 +87,8 @@ export async function exportToPDF(report: Report): Promise<void> {
   y += 8;
 
   const views2D = [
-    { key: "sagittal" as const, label: "Sagittal" },
+    { key: "sagittal-avf" as const, label: "Sagittal (AVF)" },
+    { key: "sagittal-rl" as const, label: "Sagittal (RL)" },
     { key: "coronal" as const, label: "Coronal" },
     { key: "posterior" as const, label: "Posterior" },
   ];
@@ -204,7 +205,7 @@ export async function exportToPDF(report: Report): Promise<void> {
       pdf.setTextColor(30, 41, 59);
       pdf.setFont("helvetica", "bold");
       pdf.text(lesion.name, margin + 10, y + 4);
-      
+
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(71, 85, 105);
       pdf.text(lesion.location.substring(0, 40), margin + 40, y + 4);
@@ -219,7 +220,7 @@ export async function exportToPDF(report: Report): Promise<void> {
         pdf.setFontSize(8);
         pdf.setFont("helvetica", "italic");
         pdf.setTextColor(100, 116, 139);
-        
+
         const splitComment = pdf.splitTextToSize(lesion.comment, contentWidth - 50);
         pdf.text(splitComment, margin + 10, y + 2);
         y += (splitComment.length * 4) + 2;
@@ -309,7 +310,8 @@ export async function exportToWord(report: Report): Promise<void> {
   children.push(new Paragraph({ spacing: { before: 200, after: 200 } }));
 
   const views2D = [
-    { key: "sagittal" as const, label: "Sagittal" },
+    { key: "sagittal-avf" as const, label: "Sagittal (AVF)" },
+    { key: "sagittal-rl" as const, label: "Sagittal (RL)" },
     { key: "coronal" as const, label: "Coronal" },
     { key: "posterior" as const, label: "Posterior" },
   ];

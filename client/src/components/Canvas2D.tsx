@@ -1,9 +1,9 @@
 import { useRef, useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { 
-  ViewType, 
-  Position3D, 
-  project3DToView, 
-  canvas2DTo3D, 
+import {
+  ViewType,
+  Position3D,
+  project3DToView,
+  canvas2DTo3D,
   calculateCanvasBounds
 } from '@shared/3d/projections';
 import { Lesion, Severity } from '@/lib/lesionStore';
@@ -195,7 +195,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         const { width, height } = entry.contentRect;
         const roundedWidth = Math.floor(width);
         const roundedHeight = Math.floor(height);
-        
+
         if (roundedWidth > 0 && roundedHeight > 0) {
           setCanvasSize(prev => {
             if (Math.abs(prev.width - roundedWidth) > 1 || Math.abs(prev.height - roundedHeight) > 1) {
@@ -208,7 +208,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
     });
 
     resizeObserver.observe(container);
-    
+
     const rect = container.getBoundingClientRect();
     if (rect.width > 0 && rect.height > 0) {
       setCanvasSize({ width: Math.floor(rect.width), height: Math.floor(rect.height) });
@@ -255,7 +255,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
     if (!ctx) return;
 
     let drawingImageData: ImageData | null = null;
-    
+
     if (drawingCanvas && drawingCanvas.width > 0 && drawingCanvas.height > 0) {
       const drawingCtx = drawingCanvas.getContext('2d');
       if (drawingCtx) {
@@ -266,18 +266,18 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         }
       }
     }
-    
+
     if (canvas.width !== canvasSize.width || canvas.height !== canvasSize.height) {
       canvas.width = canvasSize.width;
       canvas.height = canvasSize.height;
     }
-    
+
     if (drawingCanvas) {
       if (drawingCanvas.width !== canvasSize.width || drawingCanvas.height !== canvasSize.height) {
         drawingCanvas.width = canvasSize.width;
         drawingCanvas.height = canvasSize.height;
       }
-      
+
       if (drawingImageData) {
         const drawingCtx = drawingCanvas.getContext('2d');
         if (drawingCtx) {
@@ -302,7 +302,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       const scaledHeight = viewImage.height * scale;
       const x = (canvas.width - scaledWidth) / 2;
       const y = (canvas.height - scaledHeight) / 2;
-      
+
       ctx.globalAlpha = 0.9;
       ctx.drawImage(viewImage, x, y, scaledWidth, scaledHeight);
       ctx.globalAlpha = 1.0;
@@ -313,7 +313,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       const isSelected = lesion.id === selectedLesionId;
       const isHovered = lesion.id === hoveredLesionId;
       const color = SEVERITY_COLORS[lesion.severity];
-      
+
       const baseRadius = 12 * zoomLevel;
       const radius = isHovered ? baseRadius * 1.2 : baseRadius;
 
@@ -323,7 +323,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
         ctx.stroke();
-        
+
         ctx.beginPath();
         ctx.arc(pos2D.x, pos2D.y, radius + 4, 0, Math.PI * 2);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
@@ -341,7 +341,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       );
       gradient.addColorStop(0, color);
       gradient.addColorStop(1, `${color}88`);
-      
+
       ctx.beginPath();
       ctx.arc(pos2D.x, pos2D.y, radius, 0, Math.PI * 2);
       ctx.fillStyle = gradient;
@@ -375,7 +375,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       const lesion = lesions[i];
       const pos2D = project3DToView(lesion.position, viewType, bounds);
       const distance = Math.sqrt(Math.pow(x - pos2D.x, 2) + Math.pow(y - pos2D.y, 2));
-      
+
       if (distance <= hitRadius) {
         return lesion.id;
       }
@@ -461,7 +461,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
 
   const handleDrawingPointerDown = useCallback((e: React.PointerEvent) => {
     if (drawingTool === 'select') return;
-    
+
     closeAllInputs();
 
     const drawingCanvas = drawingCanvasRef.current;
@@ -506,6 +506,85 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
     }
   }, [drawingTool, drawingColor, drawingSize, closeAllInputs]);
 
+  /** Shared shape rendering used by both move (preview) and up (commit) handlers */
+  const renderShapeOnCanvas = useCallback((
+    ctx: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement,
+    endX: number,
+    endY: number,
+  ) => {
+    if (!startPos) return;
+
+    // Restore the base image before redrawing the shape
+    if (drawingBaseRef.current) {
+      ctx.putImageData(drawingBaseRef.current, 0, 0);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Set up drawing style
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.lineWidth = drawingSize;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = drawingColor;
+    ctx.fillStyle = drawingColor;
+
+    // Create hatch pattern for filled circles if needed
+    if (fillTexture === 'pattern' && (drawingTool === 'circle' || drawingTool === 'circle-filled')) {
+      const patternCanvas = document.createElement('canvas');
+      const pCtx = patternCanvas.getContext('2d');
+      if (pCtx) {
+        patternCanvas.width = 10;
+        patternCanvas.height = 10;
+        pCtx.strokeStyle = drawingColor;
+        pCtx.lineWidth = 1;
+        pCtx.beginPath();
+        pCtx.moveTo(0, 10);
+        pCtx.lineTo(10, 0);
+        pCtx.stroke();
+        const pattern = ctx.createPattern(patternCanvas, 'repeat');
+        if (pattern) ctx.fillStyle = pattern;
+      }
+    }
+
+    // Draw the shape
+    if (drawingTool === 'line') {
+      ctx.beginPath();
+      ctx.moveTo(startPos.x, startPos.y);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+    } else if (drawingTool === 'ruler') {
+      ctx.beginPath();
+      ctx.moveTo(startPos.x, startPos.y);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+      // Endpoint cross markers
+      const markerSize = 6;
+      ctx.beginPath();
+      ctx.moveTo(startPos.x - markerSize, startPos.y - markerSize);
+      ctx.lineTo(startPos.x + markerSize, startPos.y + markerSize);
+      ctx.moveTo(startPos.x + markerSize, startPos.y - markerSize);
+      ctx.lineTo(startPos.x - markerSize, startPos.y + markerSize);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(endX - markerSize, endY - markerSize);
+      ctx.lineTo(endX + markerSize, endY + markerSize);
+      ctx.moveTo(endX + markerSize, endY - markerSize);
+      ctx.lineTo(endX - markerSize, endY + markerSize);
+      ctx.stroke();
+    } else {
+      // circle / circle-filled
+      const radius = Math.sqrt(Math.pow(endX - startPos.x, 2) + Math.pow(endY - startPos.y, 2));
+      ctx.beginPath();
+      ctx.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
+      if (drawingTool === 'circle-filled' || fillTexture !== 'none') {
+        ctx.fill();
+      }
+      ctx.stroke();
+    }
+  }, [startPos, drawingTool, drawingColor, drawingSize, fillTexture]);
+
   const handleDrawingPointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDrawing || !startPos || drawingTool === 'select' || drawingTool === 'text') return;
 
@@ -523,69 +602,9 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
       ctx.lineTo(x, y);
       ctx.stroke();
     } else if (drawingTool === 'line' || drawingTool === 'circle' || drawingTool === 'circle-filled' || drawingTool === 'ruler') {
-      if (drawingBaseRef.current) {
-        ctx.putImageData(drawingBaseRef.current, 0, 0);
-      } else {
-        ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-      }
-      
-      ctx.lineWidth = drawingSize;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.strokeStyle = drawingColor;
-      ctx.fillStyle = drawingColor;
-
-      if (fillTexture === "pattern" && (drawingTool === 'circle' || drawingTool === 'circle-filled')) {
-        const patternCanvas = document.createElement('canvas');
-        const pCtx = patternCanvas.getContext('2d');
-        if (pCtx) {
-          patternCanvas.width = 10;
-          patternCanvas.height = 10;
-          pCtx.strokeStyle = drawingColor;
-          pCtx.lineWidth = 1;
-          pCtx.beginPath();
-          pCtx.moveTo(0, 10);
-          pCtx.lineTo(10, 0);
-          pCtx.stroke();
-          const pattern = ctx.createPattern(patternCanvas, 'repeat');
-          if (pattern) ctx.fillStyle = pattern;
-        }
-      }
-
-      if (drawingTool === 'line') {
-        ctx.beginPath();
-        ctx.moveTo(startPos.x, startPos.y);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      } else if (drawingTool === 'ruler') {
-        ctx.beginPath();
-        ctx.moveTo(startPos.x, startPos.y);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        const markerSize = 6;
-        ctx.beginPath();
-        ctx.moveTo(startPos.x - markerSize, startPos.y - markerSize);
-        ctx.lineTo(startPos.x + markerSize, startPos.y + markerSize);
-        ctx.moveTo(startPos.x + markerSize, startPos.y - markerSize);
-        ctx.lineTo(startPos.x - markerSize, startPos.y + markerSize);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x - markerSize, y - markerSize);
-        ctx.lineTo(x + markerSize, y + markerSize);
-        ctx.moveTo(x + markerSize, y - markerSize);
-        ctx.lineTo(x - markerSize, y + markerSize);
-        ctx.stroke();
-      } else {
-        const radius = Math.sqrt(Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2));
-        ctx.beginPath();
-        ctx.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
-        if (drawingTool === 'circle-filled' || fillTexture !== 'none') {
-          ctx.fill();
-        }
-        ctx.stroke();
-      }
+      renderShapeOnCanvas(ctx, drawingCanvas, x, y);
     }
-  }, [isDrawing, startPos, drawingTool, drawingColor, drawingSize, fillTexture]);
+  }, [isDrawing, startPos, drawingTool, renderShapeOnCanvas]);
 
   const handleDrawingPointerUp = useCallback((e: React.PointerEvent) => {
     if (drawingTool === 'line' || drawingTool === 'circle' || drawingTool === 'circle-filled' || drawingTool === 'ruler') {
@@ -596,68 +615,13 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         const y = e.clientY - rect.top;
         const ctx = drawingCanvas.getContext('2d');
         if (ctx) {
-          if (drawingBaseRef.current) {
-            ctx.putImageData(drawingBaseRef.current, 0, 0);
-          }
-          
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.lineWidth = drawingSize;
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-          ctx.strokeStyle = drawingColor;
-          ctx.fillStyle = drawingColor;
+          renderShapeOnCanvas(ctx, drawingCanvas, x, y);
 
-          if (fillTexture === "pattern" && (drawingTool === 'circle' || drawingTool === 'circle-filled')) {
-            const patternCanvas = document.createElement('canvas');
-            const pCtx = patternCanvas.getContext('2d');
-            if (pCtx) {
-              patternCanvas.width = 10;
-              patternCanvas.height = 10;
-              pCtx.strokeStyle = drawingColor;
-              pCtx.lineWidth = 1;
-              pCtx.beginPath();
-              pCtx.moveTo(0, 10);
-              pCtx.lineTo(10, 0);
-              pCtx.stroke();
-              const pattern = ctx.createPattern(patternCanvas, 'repeat');
-              if (pattern) ctx.fillStyle = pattern;
-            }
-          }
-
-          if (drawingTool === 'line') {
-            ctx.beginPath();
-            ctx.moveTo(startPos.x, startPos.y);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-          } else if (drawingTool === 'ruler') {
-            ctx.beginPath();
-            ctx.moveTo(startPos.x, startPos.y);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            const markerSize = 6;
-            ctx.beginPath();
-            ctx.moveTo(startPos.x - markerSize, startPos.y - markerSize);
-            ctx.lineTo(startPos.x + markerSize, startPos.y + markerSize);
-            ctx.moveTo(startPos.x + markerSize, startPos.y - markerSize);
-            ctx.lineTo(startPos.x - markerSize, startPos.y + markerSize);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x - markerSize, y - markerSize);
-            ctx.lineTo(x + markerSize, y + markerSize);
-            ctx.moveTo(x + markerSize, y - markerSize);
-            ctx.lineTo(x - markerSize, y + markerSize);
-            ctx.stroke();
+          // Ruler-specific: show measurement input
+          if (drawingTool === 'ruler') {
             setRulerLineData({ sx: startPos.x, sy: startPos.y, ex: x, ey: y });
             setRulerInput('');
             setShowRulerInput(true);
-          } else {
-            const radius = Math.sqrt(Math.pow(x - startPos.x, 2) + Math.pow(y - startPos.y, 2));
-            ctx.beginPath();
-            ctx.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
-            if (drawingTool === 'circle-filled' || fillTexture !== 'none') {
-              ctx.fill();
-            }
-            ctx.stroke();
           }
         }
       }
@@ -670,11 +634,11 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
     if (drawingTool !== 'text' && drawingTool !== 'ruler') {
       setStartPos(null);
     }
-  }, [isDrawing, startPos, drawingTool, drawingColor, drawingSize, fillTexture, saveDrawing]);
+  }, [isDrawing, startPos, drawingTool, renderShapeOnCanvas, saveDrawing]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className="relative w-full h-full bg-white rounded-lg overflow-hidden border border-slate-300 shadow-sm"
       data-testid={`canvas-2d-${viewType}`}
     >
@@ -690,7 +654,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
           onDoubleClick={handleDoubleClick}
           data-testid={`canvas-${viewType}`}
         />
-        
+
         <canvas
           ref={drawingCanvasRef}
           className={`absolute inset-0 touch-none ${drawingTool !== 'select' ? 'cursor-crosshair' : 'cursor-default'}`}
@@ -702,7 +666,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
           data-testid={`drawing-canvas-${viewType}`}
         />
       </div>
-      
+
       {showTextInput && startPos && (() => {
         const confirmText = () => {
           if (!textInput.trim()) {
@@ -753,7 +717,7 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
           </div>
         );
       })()}
-      
+
       {showRulerInput && rulerLineData && (() => {
         const confirmRuler = () => {
           if (!rulerInput.trim()) {
@@ -786,9 +750,9 @@ const Canvas2D = forwardRef<Canvas2DHandle, Canvas2DProps>(({
         return (
           <div
             className="absolute bg-slate-800 border border-slate-600 rounded p-2 z-30"
-            style={{ 
-              left: `${(rulerLineData.sx + rulerLineData.ex) / 2}px`, 
-              top: `${(rulerLineData.sy + rulerLineData.ey) / 2 - 40}px` 
+            style={{
+              left: `${(rulerLineData.sx + rulerLineData.ex) / 2}px`,
+              top: `${(rulerLineData.sy + rulerLineData.ey) / 2 - 40}px`
             }}
             onPointerDown={(e) => e.stopPropagation()}
           >

@@ -10,9 +10,9 @@ import { toast } from 'sonner';
 
 export default function PreviewReport() {
   const [, setLocation] = useLocation();
-  const { 
-    pdfImages, 
-    removePdfImage, 
+  const {
+    pdfImages,
+    removePdfImage,
     clearPdfImages,
     reorderPdfImages,
     patientName,
@@ -26,8 +26,13 @@ export default function PreviewReport() {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropTarget, setDropTarget] = useState<number | null>(null);
   const dragNodeRef = useRef<HTMLDivElement | null>(null);
-  const handleExportPdf = () => {
-    generatePdfReport(pdfImages, { patientName, examDate, patientId });
+  const handleExportPdf = async () => {
+    try {
+      await generatePdfReport(pdfImages, { patientName, examDate, patientId });
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast.error('Erro ao gerar o PDF. Tente novamente.');
+    }
   };
 
   const handlePrint = () => {
@@ -220,7 +225,7 @@ export default function PreviewReport() {
 
               <div className={`grid ${getGridClass()} gap-6 print:gap-4`}>
                 {pdfImages.map((image, index) => (
-                  <div 
+                  <div
                     key={`${image.viewType}-${index}`}
                     draggable
                     onDragStart={(e) => handleDragStart(e, index)}
@@ -228,13 +233,12 @@ export default function PreviewReport() {
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, index)}
-                    className={`border rounded-lg overflow-hidden print:border-gray-300 print:break-inside-avoid transition-all duration-200 ${
-                      dropTarget === index
+                    className={`border rounded-lg overflow-hidden print:border-gray-300 print:break-inside-avoid transition-all duration-200 ${dropTarget === index
                         ? `border-2 border-pink-500 ring-2 ring-pink-300/50 scale-[1.02] shadow-lg shadow-pink-500/20 ${dragIndex !== null && dragIndex > index ? 'border-t-4 border-t-pink-600' : 'border-b-4 border-b-pink-600'}`
                         : dragIndex === index
-                        ? 'border-dashed border-gray-400 opacity-50 scale-[0.97] dark:border-slate-500'
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm dark:border-slate-700 dark:hover:border-slate-600'
-                    }`}
+                          ? 'border-dashed border-gray-400 opacity-50 scale-[0.97] dark:border-slate-500'
+                          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm dark:border-slate-700 dark:hover:border-slate-600'
+                      }`}
                     data-testid={`preview-card-${index}`}
                   >
                     <div className="bg-gray-100 px-3 py-2 border-b border-gray-200 flex items-center justify-between print:bg-gray-50 dark:bg-slate-800 dark:border-slate-700">
@@ -281,7 +285,7 @@ export default function PreviewReport() {
                         </Button>
                       </div>
                     </div>
-                    
+
                     <div className="bg-white flex items-center justify-center p-4 dark:bg-slate-900" style={{ minHeight: count <= 2 ? '400px' : '250px' }}>
                       <img
                         src={image.data}

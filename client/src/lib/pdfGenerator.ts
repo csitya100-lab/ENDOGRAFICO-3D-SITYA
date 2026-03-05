@@ -103,14 +103,28 @@ function addFooter(pdf: jsPDF) {
   );
 }
 
-export function generatePdfReport(
+function loadImageDimensions(src: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.width, height: img.height });
+    img.onerror = () => resolve({ width: 800, height: 600 });
+    img.src = src;
+  });
+}
+
+export async function generatePdfReport(
   images: PdfImage[],
   metadata?: { patientName?: string; examDate?: string; patientId?: string }
-): void {
+): Promise<void> {
   if (images.length === 0) {
     toast.warning('Nenhuma imagem adicionada ao relatório.');
     return;
   }
+
+  // Pre-load all image dimensions in parallel
+  const dimensions = await Promise.all(
+    images.map((img) => loadImageDimensions(img.data))
+  );
 
   const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
 
@@ -130,10 +144,7 @@ export function generatePdfReport(
       addFooter(pdf);
     }
 
-    const tempImg = new Image();
-    tempImg.src = img.data;
-    const origWidth = tempImg.width || 800;
-    const origHeight = tempImg.height || 600;
+    const { width: origWidth, height: origHeight } = dimensions[index];
 
     addImageInSlot(pdf, img.data, slots[slotIndex], origWidth, origHeight, img.label);
   });
