@@ -19,7 +19,7 @@ interface Uterus3DProps {
   onLesionCountChange?: (count: number) => void;
   onLesionsUpdate?: (lesions: Lesion[]) => void;
   readOnly?: boolean;
-  interactionMode?: 'add' | 'edit' | 'navigate';
+
   selectedLesionId?: string | null;
   onSelectLesion?: (id: string | null) => void;
 }
@@ -45,7 +45,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
   onLesionCountChange,
   onLesionsUpdate,
   readOnly = false,
-  interactionMode = 'add',
+
   selectedLesionId = null,
   onSelectLesion
 }, ref) => {
@@ -548,10 +548,6 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     }));
   };
 
-  // Legacy function for compatibility - creates all markers from scratch
-  const createMarkerForView = (lesion: Lesion, viewIdx: number, view: any) => {
-    addMarkersForLesion(lesion);
-  };
 
   useEffect(() => {
     if (!canvasRef.current || !viewMainRef.current || !viewSagittalRef.current || !viewCoronalRef.current || !viewPosteriorRef.current || !viewSagittalRLRef.current) return;
@@ -808,7 +804,14 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     // Assign updateAllMarkers function to ref for external access
     updateMarkersRef.current = updateAllMarkers;
 
-    const views: any[] = [];
+    interface ViewConfig {
+      element: HTMLDivElement;
+      camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
+      controls: OrbitControls;
+      viewIdx: number;
+      viewType: 'perspective' | 'orthographic';
+    }
+    const views: ViewConfig[] = [];
     viewsRef.current = views;
 
     function setupView(element: HTMLDivElement, cameraType: 'perspective' | 'orthographic', camPos: number[], upVec: number[], viewIdx: number, fov = 45) {
@@ -887,7 +890,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     const markerMouse = new THREE.Vector2();
 
     // Detect which lesion marker was clicked
-    const detectLesionMarker = (event: PointerEvent, viewIdx: number): string | null => {
+    const detectLesionMarker = (event: MouseEvent, viewIdx: number): string | null => {
       const view = views[viewIdx];
       const rect = view.element.getBoundingClientRect();
 
@@ -1047,7 +1050,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     };
 
     // Double-click: Delete lesion
-    const handleViewDoubleClick = (viewIdx: number) => (event: PointerEvent) => {
+    const handleViewDoubleClick = (viewIdx: number) => (event: MouseEvent) => {
       if (readOnlyRef.current) return;
       const lesionId = detectLesionMarker(event, viewIdx);
 
@@ -1059,7 +1062,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     };
 
     // Store handlers for cleanup
-    const handlers: { idx: number; down: any; move: any; up: any; leave: any; dblclick: any; contextmenu: any }[] = [];
+    const handlers: { idx: number; down: (e: PointerEvent) => void; move: (e: PointerEvent) => void; up: (e: PointerEvent) => void; leave: (e: PointerEvent) => void; dblclick: (e: MouseEvent) => void; contextmenu: (e: Event) => void }[] = [];
 
     // Add event listeners for all views after they're set up
     for (let i = 0; i < views.length; i++) {
@@ -1104,8 +1107,9 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
         renderer.setViewport(left, bottom, width, height);
         renderer.setScissor(left, bottom, width, height);
 
-        view.camera.aspect = width / height;
-        if (view.camera.isOrthographicCamera) {
+        if (view.camera instanceof THREE.PerspectiveCamera) {
+          view.camera.aspect = width / height;
+        } else if (view.camera instanceof THREE.OrthographicCamera) {
           const frustumSize = 8;
           const aspect = width / height;
           view.camera.left = -frustumSize * aspect / 2;

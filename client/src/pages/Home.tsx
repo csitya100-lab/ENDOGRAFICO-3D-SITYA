@@ -185,8 +185,8 @@ export default function Home() {
               <button
                 onClick={() => setInteractionMode('navigate')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${interactionMode === 'navigate'
-                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-slate-700 dark:text-white dark:border-slate-600'
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-slate-700 dark:text-white dark:border-slate-600'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'
                   }`}
                 data-testid="button-mode-navigate"
                 aria-label="Modo navegação"
@@ -197,8 +197,8 @@ export default function Home() {
               <button
                 onClick={() => setInteractionMode('add')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${interactionMode === 'add'
-                    ? 'bg-pink-100 text-pink-700 border border-pink-300 dark:bg-pink-500/20 dark:text-pink-400 dark:border-pink-500/50'
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'
+                  ? 'bg-pink-100 text-pink-700 border border-pink-300 dark:bg-pink-500/20 dark:text-pink-400 dark:border-pink-500/50'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'
                   }`}
                 data-testid="button-mode-add"
                 aria-label="Modo marcação de lesão"
@@ -431,7 +431,6 @@ export default function Home() {
               markerSize={markerSize}
               markerColor={markerColor}
               markerType="circle"
-              interactionMode={interactionMode}
               onLesionCountChange={() => { }}
               onLesionsUpdate={() => { }}
             />

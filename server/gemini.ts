@@ -13,15 +13,17 @@ function getOpenAIClient(): OpenAI {
 }
 
 export async function generateFindings(lesions: Array<{
-  name: string;
-  location: string;
+  id: string;
   severity: string;
+  position: { x: number; y: number; z: number };
+  location?: string;
+  observacoes?: string;
 }>) {
   const superficialCount = lesions.filter(l => l.severity === 'superficial').length;
   const deepCount = lesions.filter(l => l.severity === 'deep').length;
 
-  const lesionDescriptions = lesions.map(l =>
-    `- ${l.name}: ${l.location} (${l.severity === 'superficial' ? 'superficial' : 'profunda'})`
+  const lesionDescriptions = lesions.map((l, i) =>
+    `- Lesão ${i + 1}: ${l.location || 'localização não especificada'} (${l.severity === 'superficial' ? 'superficial' : 'profunda'})`
   ).join('\n');
 
   const prompt = `Você é um médico especialista em endometriose. Com base nos achados do mapeamento cirúrgico abaixo, gere um texto descritivo médico profissional em português brasileiro para a seção "Achados" de um relatório cirúrgico.

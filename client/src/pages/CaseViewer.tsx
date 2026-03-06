@@ -21,7 +21,7 @@ export default function CaseViewer() {
 
   useEffect(() => {
     clearLesions();
-    
+
     if (!caseId) {
       setError('ID do caso não fornecido');
       setLoading(false);
@@ -101,7 +101,7 @@ export default function CaseViewer() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Voltar
           </Button>
-          
+
           {caseData && (
             <div className="flex items-center gap-4">
               <div className="flex bg-gray-800/80 rounded-lg p-1 border border-gray-700">
@@ -144,9 +144,8 @@ export default function CaseViewer() {
       </div>
 
       <div className="h-screen pt-16">
-        <Uterus3D 
-          readOnly={false} 
-          interactionMode={interactionMode}
+        <Uterus3D
+          readOnly={false}
           selectedLesionId={selectedLesionId}
           onSelectLesion={setSelectedLesionId}
         />

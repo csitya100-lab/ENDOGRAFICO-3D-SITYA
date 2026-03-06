@@ -22,110 +22,110 @@ export function processGLBModel(
   const scale = 4 / maxDim;
   model.scale.set(scale, scale, scale);
 
-  model.traverse((child: any) => {
-      if ((child as THREE.Mesh).isMesh && child !== model) {
-          const mesh = child as THREE.Mesh;
+  model.traverse((child: THREE.Object3D) => {
+    if ((child as THREE.Mesh).isMesh && child !== model) {
+      const mesh = child as THREE.Mesh;
 
-          const meshNameLow = mesh.name.toLowerCase();
-          if (meshNameLow.includes('sacro') || 
-              meshNameLow.includes('ligament') || 
-              meshNameLow.includes('uterosacral') ||
-              meshNameLow.includes('round')) {
-            mesh.visible = false;
-            return;
-          }
-
-          let originalColor = new THREE.Color(0xffffff);
-          let originalMat = mesh.material;
-          if (Array.isArray(originalMat)) {
-              originalMat = originalMat[0];
-          }
-          if (originalMat instanceof THREE.MeshStandardMaterial || originalMat instanceof THREE.MeshPhongMaterial) {
-              originalColor = (originalMat as any).color.clone();
-          }
-
-          const r = originalColor.r;
-          const g = originalColor.g;
-          const b = originalColor.b;
-
-          let newColor = new THREE.Color(0xd67c7c);
-          let roughness = 0.4;
-          let metalness = 0.05;
-          let clearcoat = isIOSDevice ? 0 : 0.1;
-          let clearcoatRoughness = 0.3;
-          let envMapIntensity = 0.5;
-          let transparent = false;
-          let opacity = 1.0;
-
-          if (r > 0.8 && g > 0.8 && b < 0.4) {
-              newColor = new THREE.Color(0xffe6a0);
-              roughness = 0.1;
-              metalness = 0.1;
-              transparent = true;
-              opacity = 0.3;
-          }
-          else if (r < 0.4 && g > 0.7 && b > 0.8) {
-              newColor = new THREE.Color(0xffeebb);
-              roughness = 0.3;
-              metalness = 0.0;
-              transparent = true;
-              opacity = 0.6;
-          }
-          else if (r > 0.7 && g > 0.4 && b > 0.3 && r - g > 0.2) {
-              newColor = new THREE.Color(0xd48c8c);
-              roughness = 0.5;
-              metalness = 0.0;
-              clearcoat = 0;
-          }
-          else if (r > 0.6 && g > 0.4 && b > 0.3 && r - g < 0.3) {
-              newColor = new THREE.Color(0xe08e8e);
-              roughness = 0.4;
-              metalness = 0.0;
-              clearcoat = 0;
-          }
-          else if (r > 0.8 && g < 0.7 && b < 0.7 && r - g < 0.3) {
-              newColor = new THREE.Color(0xe8dcc5);
-              roughness = 0.5;
-              metalness = 0.0;
-              clearcoat = isIOSDevice ? 0 : 0.1;
-              envMapIntensity = 0.3;
-          }
-
-          let newMaterial: THREE.Material;
-          if (isIOSDevice || isMobileDevice) {
-              newMaterial = new THREE.MeshStandardMaterial({
-                  color: newColor,
-                  roughness: roughness,
-                  metalness: metalness,
-                  transparent: transparent,
-                  opacity: opacity,
-                  side: THREE.DoubleSide
-              });
-          } else {
-              const physicalParams: any = {
-                  color: newColor,
-                  roughness: roughness,
-                  metalness: metalness,
-                  clearcoat: clearcoat,
-                  clearcoatRoughness: clearcoatRoughness,
-                  envMapIntensity: envMapIntensity,
-                  transparent: transparent,
-                  opacity: opacity,
-                  side: THREE.DoubleSide
-              };
-              if (transparent && opacity < 0.5) {
-                  physicalParams.transmission = 0.1;
-                  physicalParams.thickness = 0.2;
-              }
-              newMaterial = new THREE.MeshPhysicalMaterial(physicalParams);
-          }
-
-          mesh.material = newMaterial;
-          if (!isIOSDevice && !isMobileDevice) {
-              mesh.castShadow = true;
-              mesh.receiveShadow = true;
-          }
+      const meshNameLow = mesh.name.toLowerCase();
+      if (meshNameLow.includes('sacro') ||
+        meshNameLow.includes('ligament') ||
+        meshNameLow.includes('uterosacral') ||
+        meshNameLow.includes('round')) {
+        mesh.visible = false;
+        return;
       }
+
+      let originalColor = new THREE.Color(0xffffff);
+      let originalMat = mesh.material;
+      if (Array.isArray(originalMat)) {
+        originalMat = originalMat[0];
+      }
+      if (originalMat instanceof THREE.MeshStandardMaterial || originalMat instanceof THREE.MeshPhongMaterial) {
+        originalColor = (originalMat as THREE.MeshStandardMaterial).color.clone();
+      }
+
+      const r = originalColor.r;
+      const g = originalColor.g;
+      const b = originalColor.b;
+
+      let newColor = new THREE.Color(0xd67c7c);
+      let roughness = 0.4;
+      let metalness = 0.05;
+      let clearcoat = isIOSDevice ? 0 : 0.1;
+      let clearcoatRoughness = 0.3;
+      let envMapIntensity = 0.5;
+      let transparent = false;
+      let opacity = 1.0;
+
+      if (r > 0.8 && g > 0.8 && b < 0.4) {
+        newColor = new THREE.Color(0xffe6a0);
+        roughness = 0.1;
+        metalness = 0.1;
+        transparent = true;
+        opacity = 0.3;
+      }
+      else if (r < 0.4 && g > 0.7 && b > 0.8) {
+        newColor = new THREE.Color(0xffeebb);
+        roughness = 0.3;
+        metalness = 0.0;
+        transparent = true;
+        opacity = 0.6;
+      }
+      else if (r > 0.7 && g > 0.4 && b > 0.3 && r - g > 0.2) {
+        newColor = new THREE.Color(0xd48c8c);
+        roughness = 0.5;
+        metalness = 0.0;
+        clearcoat = 0;
+      }
+      else if (r > 0.6 && g > 0.4 && b > 0.3 && r - g < 0.3) {
+        newColor = new THREE.Color(0xe08e8e);
+        roughness = 0.4;
+        metalness = 0.0;
+        clearcoat = 0;
+      }
+      else if (r > 0.8 && g < 0.7 && b < 0.7 && r - g < 0.3) {
+        newColor = new THREE.Color(0xe8dcc5);
+        roughness = 0.5;
+        metalness = 0.0;
+        clearcoat = isIOSDevice ? 0 : 0.1;
+        envMapIntensity = 0.3;
+      }
+
+      let newMaterial: THREE.Material;
+      if (isIOSDevice || isMobileDevice) {
+        newMaterial = new THREE.MeshStandardMaterial({
+          color: newColor,
+          roughness: roughness,
+          metalness: metalness,
+          transparent: transparent,
+          opacity: opacity,
+          side: THREE.DoubleSide
+        });
+      } else {
+        const physicalParams: THREE.MeshPhysicalMaterialParameters = {
+          color: newColor,
+          roughness: roughness,
+          metalness: metalness,
+          clearcoat: clearcoat,
+          clearcoatRoughness: clearcoatRoughness,
+          envMapIntensity: envMapIntensity,
+          transparent: transparent,
+          opacity: opacity,
+          side: THREE.DoubleSide
+        };
+        if (transparent && opacity < 0.5) {
+          physicalParams.transmission = 0.1;
+          physicalParams.thickness = 0.2;
+        }
+        newMaterial = new THREE.MeshPhysicalMaterial(physicalParams);
+      }
+
+      mesh.material = newMaterial;
+      if (!isIOSDevice && !isMobileDevice) {
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+      }
+    }
   });
 
   anatomyGroup.add(model);
@@ -133,7 +133,7 @@ export function processGLBModel(
   // Identify bladder by position (most anterior mesh - highest Z value)
   // Filter out utero-ovarian and cardinal ligaments (elongated tubular meshes)
   const allMeshes: THREE.Mesh[] = [];
-  model.traverse((child: any) => {
+  model.traverse((child: THREE.Object3D) => {
     if ((child as THREE.Mesh).isMesh) {
       allMeshes.push(child as THREE.Mesh);
     }

@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Git Pull ao Abrir",
+      "label": "Git Sync ao Abrir",
       "type": "shell",
-      "command": "git pull origin main",
+      "command": "git add -A; git diff --cached --quiet; if (-not $?) { git commit -m 'auto-sync: mudanças locais do VS Code' }; git push origin main 2>$null; $stashed = git stash; git pull origin main --no-edit 2>$null; if ($stashed -match 'Saved') { git stash pop 2>$null }",
       "runOptions": {
         "runOn": "folderOpen"
       },
