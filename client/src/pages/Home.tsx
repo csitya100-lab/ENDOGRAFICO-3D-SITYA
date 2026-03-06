@@ -12,7 +12,7 @@ import { getAnatomyLabel } from '@/lib/anatomyStore';
 import { saveCaseToDb, isSupabaseConfigured } from '@/lib/caseDb';
 import AppLayout from '@/components/AppLayout';
 import { Slider } from '@/components/ui/slider';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 
 interface ExamInfo {
   patient: string;
@@ -168,201 +168,48 @@ export default function Home() {
   return (
     <AppLayout>
       <div className="flex flex-col h-full overflow-hidden">
-        <header className="flex-none h-16 border-b border-slate-200 bg-white shadow-sm px-6 flex items-center justify-between z-20 dark:bg-slate-900 dark:border-slate-700 dark:shadow-none">
+        {/* Barra Superior — Logo + Dados do Paciente + Relatório */}
+        <header className="flex-none h-12 border-b border-slate-200 bg-white px-4 flex items-center justify-between z-20 dark:bg-slate-900 dark:border-slate-700">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">3D</span>
-              </div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-900 font-sans dark:text-white">
-                Endo<span className="text-rose-600 dark:text-rose-400">Mapper</span>
-              </h1>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+              <span className="text-white font-bold text-xs">3D</span>
             </div>
-
-            <div className="h-8 w-px bg-slate-200 hidden sm:block dark:bg-slate-700" />
-
-            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 dark:bg-slate-800 dark:border-slate-700">
-              <button
-                onClick={() => setInteractionMode('navigate')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${interactionMode === 'navigate'
-                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-slate-700 dark:text-white dark:border-slate-600'
-                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'
-                  }`}
-                data-testid="button-mode-navigate"
-                aria-label="Modo navegação"
-              >
-                <MousePointer2 className="w-3.5 h-3.5" />
-                Navegar
-              </button>
-              <button
-                onClick={() => setInteractionMode('add')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${interactionMode === 'add'
-                  ? 'bg-pink-100 text-pink-700 border border-pink-300 dark:bg-pink-500/20 dark:text-pink-400 dark:border-pink-500/50'
-                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'
-                  }`}
-                data-testid="button-mode-add"
-                aria-label="Modo marcação de lesão"
-              >
-                <Crosshair className="w-3.5 h-3.5" />
-                Marcar
-              </button>
-            </div>
-
-            <div className="h-8 w-px bg-slate-200 hidden sm:block dark:bg-slate-700" />
-
-            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 dark:bg-slate-800 dark:border-slate-700">
-              <button
-                onClick={() => setSeverity('superficial')}
-                className={`
-                  px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all
-                  ${severity === 'superficial'
-                    ? 'bg-red-100 text-red-700 border border-red-300 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/50'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'}
-                `}
-              >
-                <div className={`w-2 h-2 rounded-full ${severity === 'superficial' ? 'bg-red-500' : 'bg-slate-400'}`} />
-                Superficial
-              </button>
-              <button
-                onClick={() => setSeverity('deep')}
-                className={`
-                  px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-2 transition-all
-                  ${severity === 'deep'
-                    ? 'bg-blue-100 text-blue-700 border border-blue-300 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500/50'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700'}
-                `}
-              >
-                <div className={`w-2 h-2 rounded-full ${severity === 'deep' ? 'bg-blue-500' : 'bg-slate-400'}`} />
-                Profunda
-              </button>
-            </div>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 gap-2 bg-slate-100 border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300">
-                  <Settings2 className="w-4 h-4" />
-                  <span className="text-xs font-medium">Marcador</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-4" align="start">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium text-slate-700 mb-2 block dark:text-slate-300">Tamanho: {markerSize.toFixed(2)}</label>
-                    <Slider
-                      value={[markerSize]}
-                      onValueChange={([v]) => setMarkerSize(v)}
-                      min={0.08}
-                      max={0.5}
-                      step={0.02}
-                      className="w-full"
-                      data-testid="slider-marker-size"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-slate-700 mb-2 block dark:text-slate-300">Cor personalizada</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={markerColor || '#ef4444'}
-                        onChange={(e) => setMarkerColor(e.target.value)}
-                        className="w-10 h-8 cursor-pointer rounded border border-slate-300"
-                        data-testid="input-marker-color"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setMarkerColor(undefined)}
-                        className="text-xs h-8"
-                        data-testid="button-reset-color"
-                      >
-                        Usar cor padrão
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <h1 className="text-lg font-bold tracking-tight text-slate-900 font-sans dark:text-white">
+              Endo<span className="text-rose-600 dark:text-rose-400">Mapper</span>
+            </h1>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3 pr-3 border-r border-slate-200 dark:border-slate-700">
-              <div className="flex flex-col gap-1">
-                <input
-                  type="text"
-                  value={examInfo.patient}
-                  onChange={(e) => setExamInfo(prev => ({ ...prev, patient: e.target.value }))}
-                  placeholder="Nome da paciente"
-                  className="text-sm font-semibold text-black bg-white border border-slate-200 rounded px-2 py-0.5 w-36 focus:outline-none focus:ring-1 focus:ring-pink-400"
-                  data-testid="input-patient-name"
-                />
-                <input
-                  type="text"
-                  value={examPatientId}
-                  onChange={(e) => setExamPatientId(e.target.value)}
-                  placeholder="ID"
-                  className="text-xs text-black bg-white border border-slate-200 rounded px-2 py-0.5 w-36 focus:outline-none focus:ring-1 focus:ring-pink-400"
-                  data-testid="input-patient-id"
-                />
-                <input
-                  type="text"
-                  value={examInfo.date}
-                  onChange={(e) => setExamInfo(prev => ({ ...prev, date: e.target.value }))}
-                  placeholder="Data do exame"
-                  className="text-[11px] text-black bg-white border border-slate-200 rounded px-2 py-0.5 w-36 focus:outline-none focus:ring-1 focus:ring-pink-400"
-                  data-testid="input-exam-date"
-                />
-              </div>
+            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 rounded-lg px-3 py-1.5 border border-slate-200 dark:border-slate-700">
+              <input
+                type="text"
+                value={examInfo.patient}
+                onChange={(e) => setExamInfo(prev => ({ ...prev, patient: e.target.value }))}
+                placeholder="Nome da paciente"
+                className="text-sm font-semibold text-slate-900 dark:text-white bg-transparent border-none focus:outline-none w-36 placeholder:text-slate-400"
+                data-testid="input-patient-name"
+              />
+              <div className="w-px h-5 bg-slate-300 dark:bg-slate-600" />
+              <input
+                type="text"
+                value={examPatientId}
+                onChange={(e) => setExamPatientId(e.target.value)}
+                placeholder="ID"
+                className="text-xs text-slate-600 dark:text-slate-300 bg-transparent border-none focus:outline-none w-16 placeholder:text-slate-400"
+                data-testid="input-patient-id"
+              />
+              <div className="w-px h-5 bg-slate-300 dark:bg-slate-600" />
+              <input
+                type="text"
+                value={examInfo.date}
+                onChange={(e) => setExamInfo(prev => ({ ...prev, date: e.target.value }))}
+                placeholder="Data"
+                className="text-xs text-slate-600 dark:text-slate-300 bg-transparent border-none focus:outline-none w-24 placeholder:text-slate-400"
+                data-testid="input-exam-date"
+              />
             </div>
 
-            <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
-
             <div className="flex items-center gap-1.5">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleCapture3D}
-                className="text-xs h-8 border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
-                data-testid="button-capture-3d"
-              >
-                <Camera className="w-3.5 h-3.5 mr-1" />
-                Capturar
-              </Button>
-              {draftImages3D.length > 0 && (
-                <div className="flex items-center gap-1">
-                  {draftImages3D.map((img, idx) => (
-                    <div key={img.id} className="relative group" data-testid={`capture-thumb-${idx}`}>
-                      <img
-                        src={img.data}
-                        alt={img.label}
-                        className="w-8 h-8 rounded border border-slate-300 dark:border-slate-600 object-cover"
-                      />
-                      <button
-                        onClick={() => {
-                          removeDraftImage3D(img.id);
-                          toast.info(`Captura ${idx + 1} removida`);
-                        }}
-                        className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                        data-testid={`button-remove-capture-${idx}`}
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleExportHtml}
-                disabled={isExporting}
-                className="text-xs h-8 border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
-                data-testid="button-export-3d"
-              >
-                <Download className="w-3.5 h-3.5 mr-1" />
-                {isExporting ? '...' : 'Exportar'}
-              </Button>
-
               <Button
                 size="sm"
                 variant="outline"
@@ -374,54 +221,157 @@ export default function Home() {
                 <Share2 className="w-3.5 h-3.5 mr-1" />
                 {isSaving ? '...' : 'Compartilhar'}
               </Button>
+              <Button
+                size="sm"
+                onClick={handleGenerateReport}
+                className="text-xs h-8 bg-rose-600 text-white hover:bg-rose-700"
+              >
+                <FileText className="w-3.5 h-3.5 mr-1" />
+                Relatório
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        {/* Barra de Ferramentas — Modos + Severidade + Marcador + Captura + Undo */}
+        <div className="flex-none h-10 border-b border-slate-200 bg-slate-50 px-4 flex items-center justify-between z-10 dark:bg-slate-800/50 dark:border-slate-700">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5 bg-white dark:bg-slate-800 p-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+              <button
+                onClick={() => setInteractionMode('navigate')}
+                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-all ${interactionMode === 'navigate'
+                  ? 'bg-slate-100 text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                data-testid="button-mode-navigate"
+                aria-label="Modo navegação"
+              >
+                <MousePointer2 className="w-3 h-3" />
+                Navegar
+              </button>
+              <button
+                onClick={() => setInteractionMode('add')}
+                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-all ${interactionMode === 'add'
+                  ? 'bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-400'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                data-testid="button-mode-add"
+                aria-label="Modo marcação de lesão"
+              >
+                <Crosshair className="w-3 h-3" />
+                Marcar
+              </button>
             </div>
 
-            <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
+            <div className="w-px h-5 bg-slate-300 dark:bg-slate-600" />
+
+            <div className="flex items-center gap-0.5 bg-white dark:bg-slate-800 p-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+              <button
+                onClick={() => setSeverity('superficial')}
+                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-all ${severity === 'superficial'
+                  ? 'bg-red-50 text-red-700 dark:bg-red-500/20 dark:text-red-400'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'}`}
+              >
+                <div className={`w-2 h-2 rounded-full ${severity === 'superficial' ? 'bg-red-500' : 'bg-slate-400'}`} />
+                Superficial
+              </button>
+              <button
+                onClick={() => setSeverity('deep')}
+                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-all ${severity === 'deep'
+                  ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'}`}
+              >
+                <div className={`w-2 h-2 rounded-full ${severity === 'deep' ? 'bg-blue-500' : 'bg-slate-400'}`} />
+                Profunda
+              </button>
+            </div>
+
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleCapture3D}
+              className="text-xs h-7 px-2.5 text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+              data-testid="button-capture-3d"
+            >
+              <Camera className="w-3 h-3 mr-1" />
+              Capturar
+            </Button>
+            {draftImages3D.length > 0 && (
+              <div className="flex items-center gap-1">
+                {draftImages3D.map((img, idx) => (
+                  <div key={img.id} className="relative group" data-testid={`capture-thumb-${idx}`}>
+                    <img
+                      src={img.data}
+                      alt={img.label}
+                      className="w-6 h-6 rounded border border-slate-300 dark:border-slate-600 object-cover"
+                    />
+                    <button
+                      onClick={() => {
+                        removeDraftImage3D(img.id);
+                        toast.info(`Captura ${idx + 1} removida`);
+                      }}
+                      className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                      data-testid={`button-remove-capture-${idx}`}
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <Button
               size="sm"
-              onClick={handleGenerateReport}
-              className="text-xs h-8 bg-rose-600 text-white hover:bg-rose-700"
+              variant="ghost"
+              onClick={handleExportHtml}
+              disabled={isExporting}
+              className="text-xs h-7 px-2.5 text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+              data-testid="button-export-3d"
             >
-              <FileText className="w-3.5 h-3.5 mr-1" />
-              Relatório
+              <Download className="w-3 h-3 mr-1" />
+              {isExporting ? '...' : 'Exportar'}
             </Button>
+
+            <div className="w-px h-5 bg-slate-300 dark:bg-slate-600" />
 
             <Button
               size="icon"
               variant="ghost"
               onClick={handleUndo}
               disabled={!canUndo()}
-              className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30"
+              className="h-7 w-7 text-slate-400 hover:text-slate-600 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30"
               title="Desfazer"
               data-testid="button-undo"
             >
-              <Undo2 className="w-3.5 h-3.5" />
+              <Undo2 className="w-3 h-3" />
             </Button>
             <Button
               size="icon"
               variant="ghost"
               onClick={handleRedo}
               disabled={!canRedo()}
-              className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30"
+              className="h-7 w-7 text-slate-400 hover:text-slate-600 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30"
               title="Refazer"
               data-testid="button-redo"
             >
-              <Redo2 className="w-3.5 h-3.5" />
+              <Redo2 className="w-3 h-3" />
             </Button>
             <Button
               size="icon"
               variant="ghost"
               onClick={handleClearLesions}
               disabled={lesions.length === 0}
-              className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-30"
+              className="h-7 w-7 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-30"
               title="Limpar tudo"
               data-testid="button-clear-all"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3 h-3" />
             </Button>
           </div>
-        </header>
+        </div>
 
         <div className="flex-1 flex overflow-hidden">
           <main className="flex-1 relative">
@@ -456,6 +406,48 @@ export default function Home() {
                 <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
                   <span className="text-xs text-slate-500 font-medium dark:text-slate-400">Total</span>
                   <span className="text-lg font-bold text-slate-900 dark:text-white">{lesionCount}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+              <h3 className="text-xs font-bold text-slate-900 tracking-wide mb-3 dark:text-white flex items-center gap-1.5">
+                <Settings2 className="w-3 h-3" />
+                MARCADOR
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-slate-600 mb-1.5 block dark:text-slate-400">Tamanho: {markerSize.toFixed(2)}</label>
+                  <Slider
+                    value={[markerSize]}
+                    onValueChange={([v]) => setMarkerSize(v)}
+                    min={0.08}
+                    max={0.5}
+                    step={0.02}
+                    className="w-full"
+                    data-testid="slider-marker-size"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-slate-600 mb-1.5 block dark:text-slate-400">Cor</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={markerColor || '#ef4444'}
+                      onChange={(e) => setMarkerColor(e.target.value)}
+                      className="w-8 h-7 cursor-pointer rounded border border-slate-300 dark:border-slate-600"
+                      data-testid="input-marker-color"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setMarkerColor(undefined)}
+                      className="text-[10px] h-7 px-2"
+                      data-testid="button-reset-color"
+                    >
+                      Padrão
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
