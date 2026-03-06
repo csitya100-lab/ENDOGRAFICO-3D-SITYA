@@ -29,6 +29,7 @@ export interface Uterus3DRef {
   clearLesions: () => void;
   captureAllViews: () => void;
   captureScreenshot: () => string | null;
+  updateMarkers: () => void;
 }
 
 const COLORS: Record<string, number> = {
@@ -169,6 +170,9 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     },
     clearLesions: () => {
       clearLesions();
+    },
+    updateMarkers: () => {
+      if (updateMarkersRef.current) updateMarkersRef.current();
     },
     captureAllViews: () => {
       captureViewScreenshot(1, 'sagittal-avf');

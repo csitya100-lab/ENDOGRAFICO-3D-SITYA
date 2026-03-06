@@ -6,7 +6,7 @@ import { AnatomyPanel } from '@/components/AnatomyPanel';
 import { useLesionStore, Severity, Lesion } from '@/lib/lesionStore';
 import { useReportStore } from '@/lib/reportStore';
 import { Button } from '@/components/ui/button';
-import { Circle, RotateCcw, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair, X } from 'lucide-react';
+import { Circle, RotateCcw, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair, X, Undo2, Redo2 } from 'lucide-react';
 import { export3DModelAsHtml } from '@/lib/export3DHtml';
 import { getAnatomyLabel } from '@/lib/anatomyStore';
 import { saveCaseToDb, isSupabaseConfigured } from '@/lib/caseDb';
@@ -25,7 +25,7 @@ export default function Home() {
   const [interactionMode, setInteractionMode] = useState<'navigate' | 'add'>('add');
   const [markerSize, setMarkerSize] = useState(0.18);
   const [markerColor, setMarkerColor] = useState<string | undefined>(undefined);
-  const { lesions } = useLesionStore();
+  const { lesions, undo, redo, canUndo, canRedo } = useLesionStore();
   const [examInfo, setExamInfo] = useState<ExamInfo>({
     patient: 'Paciente A',
     date: new Date().toLocaleDateString('pt-BR'),
@@ -36,18 +36,19 @@ export default function Home() {
   const [, setLocation] = useLocation();
 
   const handleClearLesions = () => {
-    const savedLesions = [...lesions];
+    if (lesions.length === 0) return;
     uterusRef.current?.clearLesions();
-    toast('Todas as lesões foram removidas', {
-      action: {
-        label: 'Desfazer',
-        onClick: () => {
-          savedLesions.forEach(l => useLesionStore.getState().addLesion(l));
-          toast.success('Lesões restauradas');
-        },
-      },
-      duration: 5000,
-    });
+    toast('Todas as lesões foram removidas');
+  };
+
+  const handleUndo = () => {
+    undo();
+    uterusRef.current?.updateMarkers();
+  };
+
+  const handleRedo = () => {
+    redo();
+    uterusRef.current?.updateMarkers();
   };
 
   const [isExporting, setIsExporting] = useState(false);
@@ -389,9 +390,33 @@ export default function Home() {
             <Button
               size="icon"
               variant="ghost"
+              onClick={handleUndo}
+              disabled={!canUndo()}
+              className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30"
+              title="Desfazer"
+              data-testid="button-undo"
+            >
+              <Undo2 className="w-3.5 h-3.5" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={handleRedo}
+              disabled={!canRedo()}
+              className="h-8 w-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30"
+              title="Refazer"
+              data-testid="button-redo"
+            >
+              <Redo2 className="w-3.5 h-3.5" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
               onClick={handleClearLesions}
-              className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
-              title="Limpar lesões"
+              disabled={lesions.length === 0}
+              className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-30"
+              title="Limpar tudo"
+              data-testid="button-clear-all"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </Button>
