@@ -64,8 +64,7 @@ export default function PublicReport() {
     const canvas = canvasRef.current;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0f172a);
-    scene.fog = new THREE.FogExp2(0x0f172a, 0.02);
+    scene.background = new THREE.Color(0xffffff);
 
     const camera = new THREE.PerspectiveCamera(
       45,

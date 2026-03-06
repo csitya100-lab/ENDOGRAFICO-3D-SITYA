@@ -597,8 +597,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     rendererRef.current = renderer;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0f172a);
-    scene.fog = new THREE.FogExp2(0x0f172a, 0.02);
+    scene.background = new THREE.Color(0xffffff);
     sceneRef.current = scene;
 
     const ambientLight = new THREE.AmbientLight(0xffffff, isIOSDevice ? 0.5 : 0.4);
@@ -1275,7 +1274,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
       )}
 
       <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-0 pointer-events-auto z-20">
-        <div ref={viewMainRef} className="relative col-span-2 border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+        <div ref={viewMainRef} className="relative col-span-2 border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
           <div className="absolute top-2 left-2 bg-slate-800/90 border border-pink-500/30 px-2 py-1 rounded text-xs font-mono text-pink-400 select-none z-10 shadow-sm">
             3D PERSPECTIVA
           </div>
@@ -1284,7 +1283,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
           </div>
         </div>
 
-        <div ref={viewSagittalRef} className="relative border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+        <div ref={viewSagittalRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
           <div className="absolute top-2 left-2 bg-slate-800/90 border border-blue-500/30 px-2 py-1 rounded text-xs font-mono text-blue-400 select-none z-10 shadow-sm">
             SAGITAL (ESQ → DIR)
           </div>
@@ -1301,7 +1300,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
           </div>
         </div>
 
-        <div ref={viewSagittalRLRef} className="relative border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+        <div ref={viewSagittalRLRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
           <div className="absolute top-2 left-2 bg-slate-800/90 border border-purple-500/30 px-2 py-1 rounded text-xs font-mono text-purple-400 select-none z-10 shadow-sm">
             SAGITAL (DIR → ESQ)
           </div>
@@ -1318,7 +1317,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
           </div>
         </div>
 
-        <div ref={viewCoronalRef} className="relative border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+        <div ref={viewCoronalRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
           <div className="absolute top-2 left-2 bg-slate-800/90 border border-green-500/30 px-2 py-1 rounded text-xs font-mono text-green-400 select-none z-10 shadow-sm">
             CORONAL (FRONTAL)
           </div>
@@ -1335,7 +1334,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
           </div>
         </div>
 
-        <div ref={viewPosteriorRef} className="relative border border-gray-700/50 pointer-events-auto bg-transparent overflow-hidden group">
+        <div ref={viewPosteriorRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
           <div className="absolute top-2 left-2 bg-slate-800/90 border border-yellow-500/30 px-2 py-1 rounded text-xs font-mono text-yellow-400 select-none z-10 shadow-sm">
             POSTERIOR (TRÁS)
           </div>
