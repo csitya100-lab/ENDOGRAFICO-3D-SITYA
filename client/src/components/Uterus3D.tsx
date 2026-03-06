@@ -1226,40 +1226,40 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
   }, []);
 
   return (
-    <div className="relative w-full h-full bg-slate-950">
+    <div className="relative w-full h-full bg-white">
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block z-0" />
 
       {loadingState === 'loading' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-50" data-testid="loading-overlay">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-50" data-testid="loading-overlay">
           <div className="relative w-16 h-16 mb-4">
             <svg className="animate-spin w-full h-full" viewBox="0 0 50 50">
               <circle
                 cx="25" cy="25" r="20"
                 fill="none"
-                stroke="#ef4444"
+                stroke="#e11d48"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeDasharray={`${loadingProgress * 1.26}, 126`}
                 className="transition-all duration-300"
               />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-xs text-white/80 font-mono">
+            <span className="absolute inset-0 flex items-center justify-center text-xs text-gray-600 font-mono">
               {loadingProgress}%
             </span>
           </div>
-          <p className="text-white/70 text-sm" data-testid="loading-text">Carregando modelo 3D...</p>
+          <p className="text-gray-500 text-sm" data-testid="loading-text">Carregando modelo 3D...</p>
         </div>
       )}
 
       {loadingState === 'error' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-50" data-testid="error-overlay">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-50" data-testid="error-overlay">
           <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <p className="text-white/70 text-sm text-center px-4" data-testid="error-text">
+          <p className="text-gray-600 text-sm text-center px-4" data-testid="error-text">
             {errorMessage || 'Erro ao carregar o modelo 3D'}
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded text-sm transition-colors"
+            className="mt-4 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded text-sm transition-colors"
             data-testid="retry-button"
           >
             Tentar novamente
@@ -1268,23 +1268,23 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
       )}
 
       {loadingState === 'fallback' && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded text-xs font-mono z-50" data-testid="fallback-notice">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-amber-50 border border-amber-200 text-amber-600 px-3 py-1 rounded text-xs font-mono z-50" data-testid="fallback-notice">
           Modo simplificado (modelo não carregou)
         </div>
       )}
 
       <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-0 pointer-events-auto z-20">
         <div ref={viewMainRef} className="relative col-span-2 border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-slate-800/90 border border-pink-500/30 px-2 py-1 rounded text-xs font-mono text-pink-400 select-none z-10 shadow-sm">
+          <div className="absolute top-2 left-2 bg-white/90 border border-rose-200 px-2 py-1 rounded text-xs font-mono text-rose-600 select-none z-10 shadow-sm">
             3D PERSPECTIVA
           </div>
           <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Esquerdo: adicionar lesão · Direito: rotacionar</span>
+            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Esquerdo: adicionar lesão · Direito: rotacionar</span>
           </div>
         </div>
 
         <div ref={viewSagittalRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-slate-800/90 border border-blue-500/30 px-2 py-1 rounded text-xs font-mono text-blue-400 select-none z-10 shadow-sm">
+          <div className="absolute top-2 left-2 bg-white/90 border border-blue-200 px-2 py-1 rounded text-xs font-mono text-blue-600 select-none z-10 shadow-sm">
             SAGITAL (ESQ → DIR)
           </div>
           <button
@@ -1296,12 +1296,12 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
             <Camera className="w-4 h-4 text-white" />
           </button>
           <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
           </div>
         </div>
 
         <div ref={viewSagittalRLRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-slate-800/90 border border-purple-500/30 px-2 py-1 rounded text-xs font-mono text-purple-400 select-none z-10 shadow-sm">
+          <div className="absolute top-2 left-2 bg-white/90 border border-purple-200 px-2 py-1 rounded text-xs font-mono text-purple-600 select-none z-10 shadow-sm">
             SAGITAL (DIR → ESQ)
           </div>
           <button
@@ -1313,12 +1313,12 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
             <Camera className="w-4 h-4 text-white" />
           </button>
           <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
           </div>
         </div>
 
         <div ref={viewCoronalRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-slate-800/90 border border-green-500/30 px-2 py-1 rounded text-xs font-mono text-green-400 select-none z-10 shadow-sm">
+          <div className="absolute top-2 left-2 bg-white/90 border border-green-200 px-2 py-1 rounded text-xs font-mono text-green-600 select-none z-10 shadow-sm">
             CORONAL (FRONTAL)
           </div>
           <button
@@ -1330,24 +1330,24 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
             <Camera className="w-4 h-4 text-white" />
           </button>
           <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
           </div>
         </div>
 
         <div ref={viewPosteriorRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-slate-800/90 border border-yellow-500/30 px-2 py-1 rounded text-xs font-mono text-yellow-400 select-none z-10 shadow-sm">
+          <div className="absolute top-2 left-2 bg-white/90 border border-amber-200 px-2 py-1 rounded text-xs font-mono text-amber-600 select-none z-10 shadow-sm">
             POSTERIOR (TRÁS)
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); captureViewScreenshot(3, 'posterior'); }}
-            className="absolute top-2 right-2 w-7 h-7 bg-yellow-500 hover:bg-yellow-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
+            className="absolute top-2 right-2 w-7 h-7 bg-amber-500 hover:bg-amber-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
             title="Capturar Posterior"
             data-testid="button-capture-posterior"
           >
             <Camera className="w-4 h-4 text-white" />
           </button>
           <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-400 font-mono bg-slate-800/80 border border-gray-700/50 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
           </div>
         </div>
       </div>
