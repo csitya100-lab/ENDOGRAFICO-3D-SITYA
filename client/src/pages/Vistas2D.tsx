@@ -282,7 +282,7 @@ export default function Vistas2D() {
             size="icon"
             onClick={() => targetView && updateViewSetting(targetView, 'drawingTool', tool)}
             disabled={disabled}
-            className={`h-8 w-8 transition-all ${settings?.drawingTool === tool ? 'bg-rose-500/20 text-rose-500 dark:text-rose-400 ring-1 ring-rose-500/50' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50'} ${disabled ? 'opacity-40' : ''}`}
+            className={`h-8 w-8 transition-all ${settings?.drawingTool === tool ? 'bg-rose-500/20 text-rose-500 dark:text-rose-400 ring-1 ring-rose-500/50' : 'text-gray-700 dark:text-slate-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50'} ${disabled ? 'opacity-40' : ''}`}
             title={label}
             data-testid={`button-tool-${tool}`}
           >
@@ -290,18 +290,18 @@ export default function Vistas2D() {
           </Button>
         ))}
 
-        <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
+        <div className="w-px h-6 bg-gray-300 dark:bg-slate-600 mx-1" />
 
-        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.undo()} disabled={disabled || !historyState[targetView!]?.canUndo} className="h-8 w-8 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50" title="Desfazer (Ctrl+Z)" data-testid="button-undo">
+        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.undo()} disabled={disabled || !historyState[targetView!]?.canUndo} className="h-8 w-8 text-gray-700 dark:text-slate-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50" title="Desfazer (Ctrl+Z)" data-testid="button-undo">
           <Undo2 className="w-4 h-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.redo()} disabled={disabled || !historyState[targetView!]?.canRedo} className="h-8 w-8 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50" title="Refazer (Ctrl+Y)" data-testid="button-redo">
+        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.redo()} disabled={disabled || !historyState[targetView!]?.canRedo} className="h-8 w-8 text-gray-700 dark:text-slate-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50" title="Refazer (Ctrl+Y)" data-testid="button-redo">
           <Redo2 className="w-4 h-4" />
         </Button>
 
         {targetView && settings && settings.drawingTool !== 'select' && (
           <>
-            <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
+            <div className="w-px h-6 bg-gray-300 dark:bg-slate-600 mx-1" />
             <input
               type="color"
               value={settings.drawingColor || '#ff0000'}
@@ -335,7 +335,7 @@ export default function Vistas2D() {
 
         {/* Active tool indicator */}
         {targetView && settings && (
-          <span className="text-[10px] text-slate-500 ml-2 font-mono">
+          <span className="text-[10px] text-gray-500 dark:text-slate-400 ml-2 font-mono">
             {TOOL_LABELS[settings.drawingTool] || settings.drawingTool}
           </span>
         )}
@@ -451,7 +451,7 @@ export default function Vistas2D() {
             variant="ghost"
             size="icon"
             onClick={() => setLocation('/3d')}
-            className="h-8 w-8 text-gray-400 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50"
+            className="h-8 w-8 text-gray-600 dark:text-slate-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50"
             data-testid="button-back-3d"
             title="Voltar ao 3D"
           >
@@ -459,7 +459,7 @@ export default function Vistas2D() {
           </Button>
           <div className="flex items-center gap-2">
             <span className="bg-rose-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">2D</span>
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">Vistas Anatômicas</span>
+            <span className="text-sm font-bold text-gray-900 dark:text-white tracking-wide">Vistas Anatômicas</span>
           </div>
           <div className="flex-1" />
           <Button
@@ -478,7 +478,7 @@ export default function Vistas2D() {
         </div>
 
         {/* Toolbar */}
-        <div className="h-11 border-b border-gray-200 dark:border-slate-800 flex items-center px-4 bg-gray-50 dark:bg-slate-900/50">
+        <div className="h-11 border-b border-gray-200 dark:border-slate-700 flex items-center px-4 bg-gray-50 dark:bg-slate-800/80">
           {renderToolbar(activeView, currentSettings)}
         </div>
 
@@ -501,12 +501,12 @@ export default function Vistas2D() {
 
             <div className="flex items-center gap-2">
               {renderToolbar(fullscreenView, viewSettings[fullscreenView], true)}
-              <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
+              <div className="w-px h-6 bg-gray-300 dark:bg-slate-600 mx-1" />
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setFullscreenView(null)}
-                className="h-8 w-8 text-gray-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10"
+                className="h-8 w-8 text-gray-600 dark:text-slate-200 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10"
                 title="Fechar (Esc)"
                 data-testid="button-close-fullscreen"
               >
