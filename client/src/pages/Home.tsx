@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
 import { Uterus3D, Uterus3DRef } from '@/components/Uterus3D';
@@ -6,7 +6,7 @@ import { AnatomyPanel } from '@/components/AnatomyPanel';
 import { useLesionStore, Severity, Lesion } from '@/lib/lesionStore';
 import { useReportStore } from '@/lib/reportStore';
 import { Button } from '@/components/ui/button';
-import { Circle, RotateCcw, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair, X, Undo2, Redo2 } from 'lucide-react';
+import { Circle, RotateCcw, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair, X, Undo2, Redo2, MapPin, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
 import { export3DModelAsHtml } from '@/lib/export3DHtml';
 import { getAnatomyLabel } from '@/lib/anatomyStore';
 import { saveCaseToDb, isSupabaseConfigured } from '@/lib/caseDb';
@@ -34,6 +34,20 @@ export default function Home() {
   const [examPatientId, setExamPatientId] = useState('');
   const uterusRef = useRef<Uterus3DRef>(null);
   const [, setLocation] = useLocation();
+  const prevLesionCountRef = useRef(lesions.length);
+  const [showLesionList, setShowLesionList] = useState(false);
+
+  // Toast feedback on lesion creation (#6)
+  useEffect(() => {
+    if (lesions.length > prevLesionCountRef.current) {
+      const newLesion = lesions[lesions.length - 1];
+      const locationLabel = newLesion.location ? getAnatomyLabel(newLesion.location) : 'modelo';
+      toast.success(`Lesão ${newLesion.severity === 'superficial' ? 'superficial' : 'profunda'} adicionada em ${locationLabel}`, {
+        duration: 2000,
+      });
+    }
+    prevLesionCountRef.current = lesions.length;
+  }, [lesions.length]);
 
   const handleClearLesions = () => {
     if (lesions.length === 0) return;
@@ -409,6 +423,51 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            {/* Lesion List (#10) */}
+            {lesions.length > 0 && (
+              <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+                <button
+                  onClick={() => setShowLesionList(!showLesionList)}
+                  className="w-full flex items-center gap-1.5 text-xs font-bold text-slate-900 tracking-wide dark:text-white mb-2"
+                >
+                  {showLesionList ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                  <MapPin className="w-3 h-3" />
+                  LESÕES ({lesions.length})
+                </button>
+                {showLesionList && (
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {lesions.map((lesion, idx) => (
+                      <div
+                        key={lesion.id}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-slate-50 dark:bg-slate-800/50 group"
+                      >
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${lesion.severity === 'superficial' ? 'bg-red-500' : 'bg-blue-500'}`} />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[10px] font-medium text-slate-700 dark:text-slate-300 block truncate">
+                            #{idx + 1} {lesion.location ? getAnatomyLabel(lesion.location) : 'Sem localização'}
+                          </span>
+                          <span className="text-[9px] text-slate-400 dark:text-slate-500">
+                            {lesion.severity === 'superficial' ? 'Superficial' : 'Profunda'}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            useLesionStore.getState().removeLesion(lesion.id);
+                            uterusRef.current?.updateMarkers();
+                            toast.info(`Lesão #${idx + 1} removida`);
+                          }}
+                          className="w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+                          title="Remover lesão"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="p-4 border-b border-slate-200 dark:border-slate-700">
               <h3 className="text-xs font-bold text-slate-900 tracking-wide mb-3 dark:text-white flex items-center gap-1.5">

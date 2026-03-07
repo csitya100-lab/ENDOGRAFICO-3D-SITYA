@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { useLesionStore, Lesion, Severity, MarkerType } from '@/lib/lesionStore';
 import { useReportStore } from '@/lib/reportStore';
 import { useAnatomyStore, AnatomyElement } from '@/lib/anatomyStore';
-import { Camera } from 'lucide-react';
+import { Camera, Maximize2, Minimize2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { isIOS, isMobile, MODEL_LOAD_TIMEOUT, getCachedModel, cacheModel } from '@/lib/modelLoader';
 import { createProgrammaticAnatomy } from '@/lib/anatomyCreator';
@@ -597,7 +597,7 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
     rendererRef.current = renderer;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0x1a1b2e);
     sceneRef.current = scene;
 
     const ambientLight = new THREE.AmbientLight(0xffffff, isIOSDevice ? 0.5 : 0.4);
@@ -1233,12 +1233,14 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
 
   }, []);
 
+  const [maximizedView, setMaximizedView] = useState<number | null>(null);
+
   return (
-    <div className="relative w-full h-full bg-white">
+    <div className="relative w-full h-full bg-[#1a1b2e]">
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block z-0" />
 
       {loadingState === 'loading' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-50" data-testid="loading-overlay">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1b2e]/95 z-50" data-testid="loading-overlay">
           <div className="relative w-16 h-16 mb-4">
             <svg className="animate-spin w-full h-full" viewBox="0 0 50 50">
               <circle
@@ -1251,16 +1253,16 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
                 className="transition-all duration-300"
               />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-xs text-gray-600 font-mono">
+            <span className="absolute inset-0 flex items-center justify-center text-xs text-slate-300 font-mono">
               {loadingProgress}%
             </span>
           </div>
-          <p className="text-gray-500 text-sm" data-testid="loading-text">Carregando modelo 3D...</p>
+          <p className="text-slate-400 text-sm" data-testid="loading-text">Carregando modelo 3D...</p>
         </div>
       )}
 
       {loadingState === 'error' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-50" data-testid="error-overlay">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1b2e]/95 z-50" data-testid="error-overlay">
           <div className="text-red-500 text-4xl mb-4">⚠️</div>
           <p className="text-gray-600 text-sm text-center px-4" data-testid="error-text">
             {errorMessage || 'Erro ao carregar o modelo 3D'}
@@ -1282,80 +1284,123 @@ export const Uterus3D = forwardRef<Uterus3DRef, Uterus3DProps>(({
       )}
 
       <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-0 pointer-events-auto z-20">
-        <div ref={viewMainRef} className="relative col-span-2 border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-white/90 border border-rose-200 px-2 py-1 rounded text-xs font-mono text-rose-600 select-none z-10 shadow-sm">
+        <div ref={viewMainRef} className={`relative border border-slate-700/50 pointer-events-auto bg-transparent overflow-hidden group col-span-2 ${maximizedView === 0 ? 'fixed inset-0 z-50 col-span-3 row-span-2 border-0' : maximizedView !== null ? 'invisible' : ''}`}>
+          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm border border-rose-500/30 px-2 py-1 rounded text-xs font-mono text-rose-400 select-none z-10">
             3D PERSPECTIVA
           </div>
-          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Esquerdo: adicionar lesão · Direito: rotacionar</span>
+          <button
+            onClick={() => setMaximizedView(maximizedView === 0 ? null : 0)}
+            className="absolute top-2 right-2 w-6 h-6 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded flex items-center justify-center z-10 transition-all opacity-0 group-hover:opacity-100 text-white/70 hover:text-white"
+            title={maximizedView === 0 ? 'Restaurar' : 'Maximizar'}
+          >
+            {maximizedView === 0 ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+          </button>
+          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[9px] text-slate-400 font-mono bg-black/60 backdrop-blur-sm border border-slate-700/50 px-2 py-1 rounded">Esquerdo: adicionar lesão · Direito: rotacionar</span>
           </div>
         </div>
 
-        <div ref={viewSagittalRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-white/90 border border-blue-200 px-2 py-1 rounded text-xs font-mono text-blue-600 select-none z-10 shadow-sm">
+        <div ref={viewSagittalRef} className={`relative border border-slate-700/50 pointer-events-auto bg-transparent overflow-hidden group ${maximizedView === 1 ? 'fixed inset-0 z-50 border-0' : maximizedView !== null ? 'invisible' : ''}`}>
+          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm border border-blue-500/30 px-2 py-1 rounded text-xs font-mono text-blue-400 select-none z-10">
             SAGITAL (ESQ → DIR)
           </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); captureViewScreenshot(1, 'sagittal-avf'); }}
-            className="absolute top-2 right-2 w-7 h-7 bg-blue-500 hover:bg-blue-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
-            title="Capturar Sagittal"
-            data-testid="button-capture-sagittal"
-          >
-            <Camera className="w-4 h-4 text-white" />
-          </button>
-          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+          <div className="absolute top-2 right-2 flex items-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => { e.stopPropagation(); captureViewScreenshot(1, 'sagittal-avf'); }}
+              className="w-6 h-6 bg-blue-500/80 hover:bg-blue-500 backdrop-blur-sm rounded flex items-center justify-center transition-colors pointer-events-auto"
+              title="Capturar Sagittal"
+              data-testid="button-capture-sagittal"
+            >
+              <Camera className="w-3.5 h-3.5 text-white" />
+            </button>
+            <button
+              onClick={() => setMaximizedView(maximizedView === 1 ? null : 1)}
+              className="w-6 h-6 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded flex items-center justify-center transition-all text-white/70 hover:text-white pointer-events-auto"
+              title={maximizedView === 1 ? 'Restaurar' : 'Maximizar'}
+            >
+              {maximizedView === 1 ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[9px] text-slate-400 font-mono bg-black/60 backdrop-blur-sm border border-slate-700/50 px-2 py-1 rounded">Direito: adicionar lesão</span>
           </div>
         </div>
 
-        <div ref={viewSagittalRLRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-white/90 border border-purple-200 px-2 py-1 rounded text-xs font-mono text-purple-600 select-none z-10 shadow-sm">
+        <div ref={viewSagittalRLRef} className={`relative border border-slate-700/50 pointer-events-auto bg-transparent overflow-hidden group ${maximizedView === 4 ? 'fixed inset-0 z-50 border-0' : maximizedView !== null ? 'invisible' : ''}`}>
+          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm border border-purple-500/30 px-2 py-1 rounded text-xs font-mono text-purple-400 select-none z-10">
             SAGITAL (DIR → ESQ)
           </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); captureViewScreenshot(4, 'sagittal-rl'); }}
-            className="absolute top-2 right-2 w-7 h-7 bg-purple-500 hover:bg-purple-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
-            title="Capturar Sagittal DIR → ESQ"
-            data-testid="button-capture-sagittal-rl"
-          >
-            <Camera className="w-4 h-4 text-white" />
-          </button>
-          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+          <div className="absolute top-2 right-2 flex items-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => { e.stopPropagation(); captureViewScreenshot(4, 'sagittal-rl'); }}
+              className="w-6 h-6 bg-purple-500/80 hover:bg-purple-500 backdrop-blur-sm rounded flex items-center justify-center transition-colors pointer-events-auto"
+              title="Capturar Sagittal DIR → ESQ"
+              data-testid="button-capture-sagittal-rl"
+            >
+              <Camera className="w-3.5 h-3.5 text-white" />
+            </button>
+            <button
+              onClick={() => setMaximizedView(maximizedView === 4 ? null : 4)}
+              className="w-6 h-6 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded flex items-center justify-center transition-all text-white/70 hover:text-white pointer-events-auto"
+              title={maximizedView === 4 ? 'Restaurar' : 'Maximizar'}
+            >
+              {maximizedView === 4 ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[9px] text-slate-400 font-mono bg-black/60 backdrop-blur-sm border border-slate-700/50 px-2 py-1 rounded">Direito: adicionar lesão</span>
           </div>
         </div>
 
-        <div ref={viewCoronalRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-white/90 border border-green-200 px-2 py-1 rounded text-xs font-mono text-green-600 select-none z-10 shadow-sm">
+        <div ref={viewCoronalRef} className={`relative border border-slate-700/50 pointer-events-auto bg-transparent overflow-hidden group ${maximizedView === 2 ? 'fixed inset-0 z-50 border-0' : maximizedView !== null ? 'invisible' : ''}`}>
+          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm border border-green-500/30 px-2 py-1 rounded text-xs font-mono text-green-400 select-none z-10">
             CORONAL (FRONTAL)
           </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); captureViewScreenshot(2, 'coronal'); }}
-            className="absolute top-2 right-2 w-7 h-7 bg-green-500 hover:bg-green-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
-            title="Capturar Coronal"
-            data-testid="button-capture-coronal"
-          >
-            <Camera className="w-4 h-4 text-white" />
-          </button>
-          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+          <div className="absolute top-2 right-2 flex items-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => { e.stopPropagation(); captureViewScreenshot(2, 'coronal'); }}
+              className="w-6 h-6 bg-green-500/80 hover:bg-green-500 backdrop-blur-sm rounded flex items-center justify-center transition-colors pointer-events-auto"
+              title="Capturar Coronal"
+              data-testid="button-capture-coronal"
+            >
+              <Camera className="w-3.5 h-3.5 text-white" />
+            </button>
+            <button
+              onClick={() => setMaximizedView(maximizedView === 2 ? null : 2)}
+              className="w-6 h-6 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded flex items-center justify-center transition-all text-white/70 hover:text-white pointer-events-auto"
+              title={maximizedView === 2 ? 'Restaurar' : 'Maximizar'}
+            >
+              {maximizedView === 2 ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[9px] text-slate-400 font-mono bg-black/60 backdrop-blur-sm border border-slate-700/50 px-2 py-1 rounded">Direito: adicionar lesão</span>
           </div>
         </div>
 
-        <div ref={viewPosteriorRef} className="relative border border-gray-300 pointer-events-auto bg-transparent overflow-hidden group">
-          <div className="absolute top-2 left-2 bg-white/90 border border-amber-200 px-2 py-1 rounded text-xs font-mono text-amber-600 select-none z-10 shadow-sm">
+        <div ref={viewPosteriorRef} className={`relative border border-slate-700/50 pointer-events-auto bg-transparent overflow-hidden group ${maximizedView === 3 ? 'fixed inset-0 z-50 border-0' : maximizedView !== null ? 'invisible' : ''}`}>
+          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm border border-amber-500/30 px-2 py-1 rounded text-xs font-mono text-amber-400 select-none z-10">
             POSTERIOR (TRÁS)
           </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); captureViewScreenshot(3, 'posterior'); }}
-            className="absolute top-2 right-2 w-7 h-7 bg-amber-500 hover:bg-amber-600 rounded flex items-center justify-center z-10 transition-colors opacity-0 group-hover:opacity-100 pointer-events-auto shadow-sm"
-            title="Capturar Posterior"
-            data-testid="button-capture-posterior"
-          >
-            <Camera className="w-4 h-4 text-white" />
-          </button>
-          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10">
-            <span className="text-[9px] text-gray-500 font-mono bg-white/90 border border-gray-200 px-2 py-1 rounded shadow-sm">Direito: adicionar lesão</span>
+          <div className="absolute top-2 right-2 flex items-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => { e.stopPropagation(); captureViewScreenshot(3, 'posterior'); }}
+              className="w-6 h-6 bg-amber-500/80 hover:bg-amber-500 backdrop-blur-sm rounded flex items-center justify-center transition-colors pointer-events-auto"
+              title="Capturar Posterior"
+              data-testid="button-capture-posterior"
+            >
+              <Camera className="w-3.5 h-3.5 text-white" />
+            </button>
+            <button
+              onClick={() => setMaximizedView(maximizedView === 3 ? null : 3)}
+              className="w-6 h-6 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded flex items-center justify-center transition-all text-white/70 hover:text-white pointer-events-auto"
+              title={maximizedView === 3 ? 'Restaurar' : 'Maximizar'}
+            >
+              {maximizedView === 3 ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+          <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[9px] text-slate-400 font-mono bg-black/60 backdrop-blur-sm border border-slate-700/50 px-2 py-1 rounded">Direito: adicionar lesão</span>
           </div>
         </div>
       </div>
