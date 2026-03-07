@@ -468,7 +468,7 @@ export default function Vistas2D() {
             size="sm"
             className={`h-8 px-4 text-xs font-medium transition-all ${selectedCount > 0
               ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-500/20'
-              : 'bg-gray-200 dark:bg-slate-800 text-gray-400 dark:text-slate-500 cursor-not-allowed'
+              : 'disabled:opacity-100 bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-300 border border-gray-300 dark:border-slate-600 cursor-not-allowed'
               }`}
             data-testid="button-send-to-report"
           >
