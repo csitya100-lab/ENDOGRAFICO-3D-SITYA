@@ -40,6 +40,24 @@ const VIEW_LABELS: Record<ViewType, string> = {
   posterior: "Posterior",
 };
 
+const VIEW_COLORS: Record<ViewType, { border: string; text: string; bg: string }> = {
+  "sagittal-avf": { border: 'border-blue-500/30', text: 'text-blue-400', bg: 'bg-blue-500' },
+  "sagittal-rvf": { border: 'border-purple-500/30', text: 'text-purple-400', bg: 'bg-purple-500' },
+  coronal: { border: 'border-green-500/30', text: 'text-green-400', bg: 'bg-green-500' },
+  posterior: { border: 'border-amber-500/30', text: 'text-amber-400', bg: 'bg-amber-500' },
+};
+
+const TOOL_LABELS: Record<string, string> = {
+  select: 'Selecionar',
+  pen: 'Desenhar',
+  eraser: 'Borracha',
+  line: 'Linha',
+  circle: 'C\u00edrculo',
+  'circle-filled': 'C\u00edrculo Preenchido',
+  text: 'Texto',
+  ruler: 'R\u00e9gua',
+};
+
 interface ViewSettings {
   drawingTool: DrawingTool;
   drawingColor: string;
@@ -149,9 +167,9 @@ export default function Vistas2D() {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
     ctx.scale(scale, scale);
-    
+
     ctx.drawImage(mainCanvas, 0, 0);
-    
+
     if (drawingCanvas) {
       ctx.drawImage(drawingCanvas, 0, 0);
     }
@@ -244,73 +262,82 @@ export default function Vistas2D() {
 
   const renderToolbar = (targetView: ViewType | null, settings: ViewSettings | null, compact = false) => {
     const disabled = !targetView;
+    const toolButtons: { tool: DrawingTool; icon: typeof Pointer; label: string; filled?: boolean }[] = [
+      { tool: 'select', icon: Pointer, label: 'Selecionar' },
+      { tool: 'pen', icon: Pen, label: 'Desenhar' },
+      { tool: 'eraser', icon: Eraser, label: 'Borracha' },
+      { tool: 'line', icon: Minus, label: 'Linha' },
+      { tool: 'circle', icon: Circle, label: 'C\u00edrculo' },
+      { tool: 'circle-filled', icon: Circle, label: 'Preenchido', filled: true },
+      { tool: 'text', icon: Type, label: 'Texto' },
+      { tool: 'ruler', icon: Ruler, label: 'R\u00e9gua' },
+    ];
+
     return (
-      <div className={`flex items-center gap-2 ${compact ? 'flex-wrap' : 'gap-3'} bg-white dark:bg-slate-800/50 rounded-lg px-3 py-2 border border-gray-200 dark:border-transparent shadow-sm`}>
-        <Button variant="ghost" size="icon" onClick={() => targetView && updateViewSetting(targetView, "drawingTool", "select")} disabled={disabled} className={`h-8 w-8 ${settings?.drawingTool === "select" ? "bg-pink-500/20 text-pink-500 ring-1 ring-pink-500/50" : ""} ${disabled ? "opacity-50" : ""}`} title="Selecionar" data-testid="button-tool-select">
-          <Pointer className="w-4 h-4" />
+      <div className={`flex items-center gap-1 ${compact ? 'flex-wrap' : ''}`}>
+        {toolButtons.map(({ tool, icon: Icon, label, filled }) => (
+          <Button
+            key={tool}
+            variant="ghost"
+            size="icon"
+            onClick={() => targetView && updateViewSetting(targetView, 'drawingTool', tool)}
+            disabled={disabled}
+            className={`h-8 w-8 transition-all ${settings?.drawingTool === tool ? 'bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/50' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'} ${disabled ? 'opacity-40' : ''}`}
+            title={label}
+            data-testid={`button-tool-${tool}`}
+          >
+            <Icon className={`w-4 h-4 ${filled ? 'fill-current' : ''}`} />
+          </Button>
+        ))}
+
+        <div className="w-px h-6 bg-slate-700 mx-1" />
+
+        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.undo()} disabled={disabled || !historyState[targetView!]?.canUndo} className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50" title="Desfazer (Ctrl+Z)" data-testid="button-undo">
+          <Undo2 className="w-4 h-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && updateViewSetting(targetView, "drawingTool", "pen")} disabled={disabled} className={`h-8 w-8 ${settings?.drawingTool === "pen" ? "bg-pink-500/20 text-pink-500 ring-1 ring-pink-500/50" : ""} ${disabled ? "opacity-50" : ""}`} title="Desenhar" data-testid="button-tool-pen">
-          <Pen className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && updateViewSetting(targetView, "drawingTool", "eraser")} disabled={disabled} className={`h-8 w-8 ${settings?.drawingTool === "eraser" ? "bg-pink-500/20 text-pink-500 ring-1 ring-pink-500/50" : ""} ${disabled ? "opacity-50" : ""}`} title="Borracha" data-testid="button-tool-eraser">
-          <Eraser className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && updateViewSetting(targetView, "drawingTool", "line")} disabled={disabled} className={`h-8 w-8 ${settings?.drawingTool === "line" ? "bg-pink-500/20 text-pink-500 ring-1 ring-pink-500/50" : ""} ${disabled ? "opacity-50" : ""}`} title="Linha" data-testid="button-tool-line">
-          <Minus className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && updateViewSetting(targetView, "drawingTool", "circle")} disabled={disabled} className={`h-8 w-8 ${settings?.drawingTool === "circle" ? "bg-pink-500/20 text-pink-500 ring-1 ring-pink-500/50" : ""} ${disabled ? "opacity-50" : ""}`} title="Circulo" data-testid="button-tool-circle">
-          <Circle className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && updateViewSetting(targetView, "drawingTool", "circle-filled")} disabled={disabled} className={`h-8 w-8 ${settings?.drawingTool === "circle-filled" ? "bg-pink-500/20 text-pink-500 ring-1 ring-pink-500/50" : ""} ${disabled ? "opacity-50" : ""}`} title="Circulo Preenchido" data-testid="button-tool-circle-filled">
-          <Circle className="w-4 h-4 fill-current" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && updateViewSetting(targetView, "drawingTool", "text")} disabled={disabled} className={`h-8 w-8 ${settings?.drawingTool === "text" ? "bg-pink-500/20 text-pink-500 ring-1 ring-pink-500/50" : ""} ${disabled ? "opacity-50" : ""}`} title="Texto" data-testid="button-tool-text">
-          <Type className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && updateViewSetting(targetView, "drawingTool", "ruler")} disabled={disabled} className={`h-8 w-8 ${settings?.drawingTool === "ruler" ? "bg-pink-500/20 text-pink-500 ring-1 ring-pink-500/50" : ""} ${disabled ? "opacity-50" : ""}`} title="Regua" data-testid="button-tool-ruler">
-          <Ruler className="w-4 h-4" />
+        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.redo()} disabled={disabled || !historyState[targetView!]?.canRedo} className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50" title="Refazer (Ctrl+Y)" data-testid="button-redo">
+          <Redo2 className="w-4 h-4" />
         </Button>
 
-        <div className="flex items-center gap-1 ml-2 border-l border-gray-300 dark:border-slate-700 pl-2">
-          <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.undo()} disabled={disabled || !historyState[targetView!]?.canUndo} className="h-8 w-8" title="Desfazer (Ctrl+Z)" data-testid="button-undo">
-            <Undo2 className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.redo()} disabled={disabled || !historyState[targetView!]?.canRedo} className="h-8 w-8" title="Refazer (Ctrl+Y)" data-testid="button-redo">
-            <Redo2 className="w-4 h-4" />
-          </Button>
-        </div>
-
-        {targetView && settings && settings.drawingTool !== "select" && (
-          <div className="flex items-center gap-2 ml-2 border-l border-gray-300 dark:border-slate-700 pl-3">
+        {targetView && settings && settings.drawingTool !== 'select' && (
+          <>
+            <div className="w-px h-6 bg-slate-700 mx-1" />
             <input
               type="color"
-              value={settings.drawingColor || "#ff0000"}
-              onChange={(e) => targetView && updateViewSetting(targetView, "drawingColor", e.target.value)}
-              className="w-7 h-7 cursor-pointer rounded bg-transparent border-none"
+              value={settings.drawingColor || '#ff0000'}
+              onChange={(e) => targetView && updateViewSetting(targetView, 'drawingColor', e.target.value)}
+              className="w-7 h-7 cursor-pointer rounded bg-transparent border border-slate-600"
               title="Cor"
               data-testid="input-drawing-color"
             />
             <input
               type="range" min="1" max="20" step="1"
               value={settings.drawingSize || 3}
-              onChange={(e) => targetView && updateViewSetting(targetView, "drawingSize", parseInt(e.target.value))}
-              className="w-20 accent-pink-500"
+              onChange={(e) => targetView && updateViewSetting(targetView, 'drawingSize', parseInt(e.target.value))}
+              className="w-16 accent-rose-500"
               title="Espessura"
               data-testid="input-drawing-size"
             />
-            {["circle", "circle-filled"].includes(settings.drawingTool || "") && (
+            {['circle', 'circle-filled'].includes(settings.drawingTool || '') && (
               <select
-                value={settings.fillTexture || "none"}
-                onChange={(e) => targetView && updateViewSetting(targetView, "fillTexture", e.target.value as any)}
-                className="bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-gray-900 dark:text-white"
+                value={settings.fillTexture || 'none'}
+                onChange={(e) => targetView && updateViewSetting(targetView, 'fillTexture', e.target.value as any)}
+                className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white"
                 data-testid="select-fill-texture"
               >
                 <option value="none">Nenhum</option>
-                <option value="solid">Sólido</option>
+                <option value="solid">S\u00f3lido</option>
                 <option value="pattern">Hachura</option>
               </select>
             )}
-          </div>
+          </>
+        )}
+
+        {/* Active tool indicator */}
+        {targetView && settings && (
+          <span className="text-[10px] text-slate-500 ml-2 font-mono">
+            {TOOL_LABELS[settings.drawingTool] || settings.drawingTool}
+          </span>
         )}
       </div>
     );
@@ -320,50 +347,52 @@ export default function Vistas2D() {
     const isSelected = selectedViews[viewType];
     const isActive = activeView === viewType || isFullscreen;
     const settings = viewSettings[viewType];
+    const colors = VIEW_COLORS[viewType];
 
     return (
       <div
         key={viewType}
-        className={`relative ${isFullscreen ? 'w-full h-full' : ''} rounded-lg overflow-hidden transition-all ${
-          isActive && !isFullscreen
-            ? "ring-2 ring-pink-500 ring-offset-2 ring-offset-gray-100 dark:ring-offset-slate-950"
-            : isFullscreen ? "" : "border border-gray-300 dark:border-slate-700 hover:border-gray-400 dark:hover:border-slate-500"
-        }`}
+        className={`relative ${isFullscreen ? 'w-full h-full' : ''} rounded-lg overflow-hidden transition-all group/card ${isActive && !isFullscreen
+            ? 'ring-2 ring-rose-500/70 ring-offset-2 ring-offset-slate-950'
+            : isFullscreen ? '' : 'border border-slate-700/50 hover:border-slate-500/70'
+          }`}
         onClick={() => !isFullscreen && setActiveView(viewType)}
         data-testid={`card-${viewType}${isFullscreen ? '-fullscreen' : ''}`}
       >
-        <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
+        {/* Hover-only action buttons (top-left) */}
+        <div className="absolute top-2 left-2 z-20 flex items-center gap-1.5 opacity-0 group-hover/card:opacity-100 transition-opacity">
           <button
             onClick={(e) => { e.stopPropagation(); toggleViewSelection(viewType); }}
-            className={`w-8 h-8 rounded-md flex items-center justify-center transition-all ${
-              isSelected
-                ? "bg-emerald-500 text-white shadow-lg"
-                : "bg-white/90 dark:bg-slate-800/80 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-600"
-            }`}
+            className={`w-7 h-7 rounded flex items-center justify-center transition-all ${isSelected
+                ? 'bg-emerald-500 text-white'
+                : 'bg-black/50 backdrop-blur-sm text-white/70 hover:bg-black/70 hover:text-white'
+              }`}
             data-testid={`checkbox-${viewType}`}
+            title="Selecionar para relat\u00f3rio"
           >
-            {isSelected && <Check className="w-5 h-5" />}
+            {isSelected && <Check className="w-4 h-4" />}
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); handleCaptureSingleView(viewType); }}
-            className="w-8 h-8 rounded-md flex items-center justify-center transition-all bg-pink-500 hover:bg-pink-600 text-white shadow-lg"
-            title="Capturar e adicionar ao relatorio"
+            className={`w-7 h-7 rounded flex items-center justify-center transition-all ${colors.bg}/80 hover:${colors.bg} text-white backdrop-blur-sm`}
+            title="Capturar"
             data-testid={`button-capture-${viewType}`}
           >
-            <Camera className="w-4 h-4" />
+            <Camera className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); handleExportView(viewType); }}
-            className="w-8 h-8 rounded-md flex items-center justify-center transition-all bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
-            title="Exportar imagem PNG"
+            className="w-7 h-7 rounded flex items-center justify-center transition-all bg-black/50 backdrop-blur-sm text-white/70 hover:bg-black/70 hover:text-white"
+            title="Exportar PDF"
             data-testid={`button-export-${viewType}`}
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
-          <div className="bg-gray-900/80 dark:bg-black/70 px-2 py-1 rounded text-xs font-medium text-white">
+        {/* Colored view label (top-right) — always visible */}
+        <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5">
+          <div className={`bg-black/60 backdrop-blur-sm ${colors.border} border px-2 py-1 rounded text-xs font-mono ${colors.text} select-none`}>
             {VIEW_LABELS[viewType]}
           </div>
           {!isFullscreen && (
@@ -373,27 +402,34 @@ export default function Vistas2D() {
                 setActiveView(viewType);
                 setFullscreenView(viewType);
               }}
-              className="w-8 h-8 rounded-md flex items-center justify-center transition-all bg-gray-900/80 dark:bg-black/70 text-white hover:bg-gray-700 dark:hover:bg-slate-600"
-              title="Tela cheia"
+              className="w-6 h-6 rounded flex items-center justify-center transition-all bg-black/50 backdrop-blur-sm text-white/70 hover:bg-black/70 hover:text-white opacity-0 group-hover/card:opacity-100"
+              title="Tela cheia (Esc para sair)"
               data-testid={`button-fullscreen-${viewType}`}
             >
-              <Maximize2 className="w-4 h-4" />
+              <Maximize2 className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
 
-        <div className={`${isFullscreen ? 'h-full' : 'h-full'} w-full bg-white`}>
+        {/* Selected indicator badge */}
+        {isSelected && !isFullscreen && (
+          <div className="absolute bottom-2 right-2 z-20 bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded">
+            SELECIONADA
+          </div>
+        )}
+
+        <div className={`${isFullscreen ? 'h-full' : 'h-full'} w-full bg-slate-900`}>
           <Canvas2D
             ref={(handle) => { canvasHandleRefs.current[viewType] = handle; }}
             viewType={viewType}
             zoomLevel={1}
             editMode={isActive}
-            drawingTool={isActive ? settings.drawingTool : "select"}
+            drawingTool={isActive ? settings.drawingTool : 'select'}
             drawingColor={settings.drawingColor}
             drawingSize={settings.drawingSize}
             drawingData={settings.drawingData}
-            onDrawingChange={(data) => updateViewSetting(viewType, "drawingData", data)}
-            fillTexture={isActive ? settings.fillTexture : "none"}
+            onDrawingChange={(data) => updateViewSetting(viewType, 'drawingData', data)}
+            fillTexture={isActive ? settings.fillTexture : 'none'}
             onCanvasRef={setCanvasRef(viewType)}
             onHistoryChange={(canUndo, canRedo) => {
               setHistoryState(prev => ({ ...prev, [viewType]: { canUndo, canRedo } }));
@@ -405,68 +441,73 @@ export default function Vistas2D() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-slate-950 text-gray-900 dark:text-white flex flex-col transition-colors">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
       <AppSidebar />
 
-      <main className="flex-1 ml-16 p-4 flex flex-col">
-        <div className="flex items-center justify-between mb-3">
+      <main className="flex-1 ml-16 flex flex-col">
+        {/* Top bar — title + back */}
+        <div className="h-12 border-b border-slate-800 flex items-center px-4 gap-3 bg-slate-900/80 backdrop-blur-sm">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setLocation('/3d')}
+            className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50"
+            data-testid="button-back-3d"
+            title="Voltar ao 3D"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setLocation("/3d")}
-              className="h-8 w-8 text-gray-400 dark:text-slate-500 hover:text-gray-900 dark:hover:text-white"
-              data-testid="button-back-3d"
-              title="Voltar ao 3D"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
+            <span className="bg-rose-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">2D</span>
+            <span className="text-sm font-semibold text-white">Vistas Anatômicas</span>
           </div>
-
-          {renderToolbar(activeView, currentSettings)}
-        </div>
-
-        <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-3">
-          {VIEW_TYPES.map((viewType) => renderCanvasCard(viewType))}
-        </div>
-
-        <div className="mt-3 flex justify-center">
+          <div className="flex-1" />
           <Button
             onClick={handleSendToReport}
             disabled={selectedCount === 0}
             size="sm"
-            className={`h-9 px-5 text-xs font-medium transition-all ${
-              selectedCount > 0
-                ? "bg-rose-600 hover:bg-rose-700 text-white"
-                : "bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed"
-            }`}
+            className={`h-8 px-4 text-xs font-medium transition-all ${selectedCount > 0
+                ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-500/20'
+                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+              }`}
             data-testid="button-send-to-report"
           >
             <Send className="w-3.5 h-3.5 mr-1.5" />
-            Enviar{selectedCount > 0 ? ` ${selectedCount}` : ""} ao Relatório
+            Enviar{selectedCount > 0 ? ` ${selectedCount}` : ''} ao Relatório
           </Button>
+        </div>
+
+        {/* Toolbar */}
+        <div className="h-11 border-b border-slate-800 flex items-center px-4 bg-slate-900/50">
+          {renderToolbar(activeView, currentSettings)}
+        </div>
+
+        {/* Canvas grid */}
+        <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-1 p-1">
+          {VIEW_TYPES.map((viewType) => renderCanvasCard(viewType))}
         </div>
       </main>
 
       {fullscreenView && (
-        <div className="fixed inset-0 z-50 bg-gray-100 dark:bg-slate-950 flex flex-col" data-testid="fullscreen-overlay">
-          <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm">
+        <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col" data-testid="fullscreen-overlay">
+          <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800">
             <div className="flex items-center gap-3">
-              <h2 className="text-lg font-bold flex items-center gap-2">
-                <Maximize2 className="w-5 h-5 text-pink-500" />
+              <div className={`bg-black/60 backdrop-blur-sm ${VIEW_COLORS[fullscreenView].border} border px-2 py-1 rounded text-sm font-mono ${VIEW_COLORS[fullscreenView].text} flex items-center gap-2`}>
+                <Maximize2 className="w-4 h-4" />
                 {VIEW_LABELS[fullscreenView]}
-              </h2>
-              <span className="text-xs text-gray-400 dark:text-slate-500">Pressione Esc para sair</span>
+              </div>
+              <span className="text-[10px] text-slate-500 font-mono">ESC para sair</span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {renderToolbar(fullscreenView, viewSettings[fullscreenView], true)}
+              <div className="w-px h-6 bg-slate-700 mx-1" />
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setFullscreenView(null)}
-                className="h-9 w-9 ml-2 text-gray-500 dark:text-slate-400 hover:text-red-500 hover:bg-red-500/10"
-                title="Fechar tela cheia (Esc)"
+                className="h-8 w-8 text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                title="Fechar (Esc)"
                 data-testid="button-close-fullscreen"
               >
                 <X className="w-5 h-5" />
@@ -474,7 +515,7 @@ export default function Vistas2D() {
             </div>
           </div>
 
-          <div className="flex-1 p-4">
+          <div className="flex-1 p-2">
             {renderCanvasCard(fullscreenView, true)}
           </div>
         </div>
