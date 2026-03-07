@@ -282,7 +282,7 @@ export default function Vistas2D() {
             size="icon"
             onClick={() => targetView && updateViewSetting(targetView, 'drawingTool', tool)}
             disabled={disabled}
-            className={`h-8 w-8 transition-all ${settings?.drawingTool === tool ? 'bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/50' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'} ${disabled ? 'opacity-40' : ''}`}
+            className={`h-8 w-8 transition-all ${settings?.drawingTool === tool ? 'bg-rose-500/20 text-rose-500 dark:text-rose-400 ring-1 ring-rose-500/50' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50'} ${disabled ? 'opacity-40' : ''}`}
             title={label}
             data-testid={`button-tool-${tool}`}
           >
@@ -290,23 +290,23 @@ export default function Vistas2D() {
           </Button>
         ))}
 
-        <div className="w-px h-6 bg-slate-700 mx-1" />
+        <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
 
-        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.undo()} disabled={disabled || !historyState[targetView!]?.canUndo} className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50" title="Desfazer (Ctrl+Z)" data-testid="button-undo">
+        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.undo()} disabled={disabled || !historyState[targetView!]?.canUndo} className="h-8 w-8 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50" title="Desfazer (Ctrl+Z)" data-testid="button-undo">
           <Undo2 className="w-4 h-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.redo()} disabled={disabled || !historyState[targetView!]?.canRedo} className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50" title="Refazer (Ctrl+Y)" data-testid="button-redo">
+        <Button variant="ghost" size="icon" onClick={() => targetView && canvasHandleRefs.current[targetView]?.redo()} disabled={disabled || !historyState[targetView!]?.canRedo} className="h-8 w-8 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50" title="Refazer (Ctrl+Y)" data-testid="button-redo">
           <Redo2 className="w-4 h-4" />
         </Button>
 
         {targetView && settings && settings.drawingTool !== 'select' && (
           <>
-            <div className="w-px h-6 bg-slate-700 mx-1" />
+            <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
             <input
               type="color"
               value={settings.drawingColor || '#ff0000'}
               onChange={(e) => targetView && updateViewSetting(targetView, 'drawingColor', e.target.value)}
-              className="w-7 h-7 cursor-pointer rounded bg-transparent border border-slate-600"
+              className="w-7 h-7 cursor-pointer rounded bg-transparent border border-gray-300 dark:border-slate-600"
               title="Cor"
               data-testid="input-drawing-color"
             />
@@ -322,7 +322,7 @@ export default function Vistas2D() {
               <select
                 value={settings.fillTexture || 'none'}
                 onChange={(e) => targetView && updateViewSetting(targetView, 'fillTexture', e.target.value as any)}
-                className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white"
+                className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded px-2 py-1 text-xs text-gray-900 dark:text-white"
                 data-testid="select-fill-texture"
               >
                 <option value="none">Nenhum</option>
@@ -353,8 +353,8 @@ export default function Vistas2D() {
       <div
         key={viewType}
         className={`relative ${isFullscreen ? 'w-full h-full' : ''} rounded-lg overflow-hidden transition-all group/card ${isActive && !isFullscreen
-            ? 'ring-2 ring-rose-500/70 ring-offset-2 ring-offset-slate-950'
-            : isFullscreen ? '' : 'border border-slate-700/50 hover:border-slate-500/70'
+          ? 'ring-2 ring-rose-500/70 ring-offset-2 ring-offset-gray-100 dark:ring-offset-slate-950'
+          : isFullscreen ? '' : 'border border-gray-300 dark:border-slate-700/50 hover:border-gray-400 dark:hover:border-slate-500/70'
           }`}
         onClick={() => !isFullscreen && setActiveView(viewType)}
         data-testid={`card-${viewType}${isFullscreen ? '-fullscreen' : ''}`}
@@ -364,8 +364,8 @@ export default function Vistas2D() {
           <button
             onClick={(e) => { e.stopPropagation(); toggleViewSelection(viewType); }}
             className={`w-7 h-7 rounded flex items-center justify-center transition-all ${isSelected
-                ? 'bg-emerald-500 text-white'
-                : 'bg-black/50 backdrop-blur-sm text-white/70 hover:bg-black/70 hover:text-white'
+              ? 'bg-emerald-500 text-white'
+              : 'bg-black/50 backdrop-blur-sm text-white/70 hover:bg-black/70 hover:text-white'
               }`}
             data-testid={`checkbox-${viewType}`}
             title="Selecionar para relat\u00f3rio"
@@ -418,7 +418,7 @@ export default function Vistas2D() {
           </div>
         )}
 
-        <div className={`${isFullscreen ? 'h-full' : 'h-full'} w-full bg-slate-900`}>
+        <div className={`${isFullscreen ? 'h-full' : 'h-full'} w-full bg-white dark:bg-slate-900`}>
           <Canvas2D
             ref={(handle) => { canvasHandleRefs.current[viewType] = handle; }}
             viewType={viewType}
@@ -441,17 +441,17 @@ export default function Vistas2D() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+    <div className="min-h-screen bg-gray-100 dark:bg-slate-950 text-gray-900 dark:text-white flex flex-col transition-colors">
       <AppSidebar />
 
       <main className="flex-1 ml-16 flex flex-col">
         {/* Top bar — title + back */}
-        <div className="h-12 border-b border-slate-800 flex items-center px-4 gap-3 bg-slate-900/80 backdrop-blur-sm">
+        <div className="h-12 border-b border-gray-200 dark:border-slate-800 flex items-center px-4 gap-3 bg-white dark:bg-slate-900/80 backdrop-blur-sm shadow-sm dark:shadow-none">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setLocation('/3d')}
-            className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50"
+            className="h-8 w-8 text-gray-400 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50"
             data-testid="button-back-3d"
             title="Voltar ao 3D"
           >
@@ -459,7 +459,7 @@ export default function Vistas2D() {
           </Button>
           <div className="flex items-center gap-2">
             <span className="bg-rose-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">2D</span>
-            <span className="text-sm font-semibold text-white">Vistas Anatômicas</span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">Vistas Anatômicas</span>
           </div>
           <div className="flex-1" />
           <Button
@@ -467,8 +467,8 @@ export default function Vistas2D() {
             disabled={selectedCount === 0}
             size="sm"
             className={`h-8 px-4 text-xs font-medium transition-all ${selectedCount > 0
-                ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-500/20'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+              ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-500/20'
+              : 'bg-gray-200 dark:bg-slate-800 text-gray-400 dark:text-slate-500 cursor-not-allowed'
               }`}
             data-testid="button-send-to-report"
           >
@@ -478,7 +478,7 @@ export default function Vistas2D() {
         </div>
 
         {/* Toolbar */}
-        <div className="h-11 border-b border-slate-800 flex items-center px-4 bg-slate-900/50">
+        <div className="h-11 border-b border-gray-200 dark:border-slate-800 flex items-center px-4 bg-gray-50 dark:bg-slate-900/50">
           {renderToolbar(activeView, currentSettings)}
         </div>
 
@@ -489,8 +489,8 @@ export default function Vistas2D() {
       </main>
 
       {fullscreenView && (
-        <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col" data-testid="fullscreen-overlay">
-          <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 bg-gray-100 dark:bg-slate-950 flex flex-col" data-testid="fullscreen-overlay">
+          <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
             <div className="flex items-center gap-3">
               <div className={`bg-black/60 backdrop-blur-sm ${VIEW_COLORS[fullscreenView].border} border px-2 py-1 rounded text-sm font-mono ${VIEW_COLORS[fullscreenView].text} flex items-center gap-2`}>
                 <Maximize2 className="w-4 h-4" />
@@ -501,12 +501,12 @@ export default function Vistas2D() {
 
             <div className="flex items-center gap-2">
               {renderToolbar(fullscreenView, viewSettings[fullscreenView], true)}
-              <div className="w-px h-6 bg-slate-700 mx-1" />
+              <div className="w-px h-6 bg-gray-300 dark:bg-slate-700 mx-1" />
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setFullscreenView(null)}
-                className="h-8 w-8 text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                className="h-8 w-8 text-gray-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10"
                 title="Fechar (Esc)"
                 data-testid="button-close-fullscreen"
               >
