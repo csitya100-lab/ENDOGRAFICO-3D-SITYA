@@ -61,7 +61,10 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const authDisabled = process.env.DISABLE_AUTH === "true";
+  // Em ambientes locais (sem REPL_ID), desabilitamos auth por padrão
+  // para permitir uso offline sem configuração de OIDC.
+  const authDisabled =
+    process.env.DISABLE_AUTH === "true" || !process.env.REPL_ID;
   if (authDisabled) {
     app.get("/api/auth/user", (_req, res) => {
       res.json({

@@ -16,7 +16,6 @@ const Vistas2D = lazy(() => import("@/pages/Vistas2D"));
 const PublicReport = lazy(() => import("@/pages/PublicReport"));
 const PrintReport = lazy(() => import("@/pages/PrintReport"));
 const PreviewReport = lazy(() => import("@/pages/PreviewReport"));
-const CaseViewer = lazy(() => import("@/pages/CaseViewer"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -62,7 +61,6 @@ function Router() {
           <Route path="/vistas-2d">
             <AuthGuard><Vistas2D /></AuthGuard>
           </Route>
-          <Route path="/view/:caseId" component={CaseViewer} />
           <Route path="/relatorio/:id" component={PublicReport} />
           <Route path="/imprimir">
             <AuthGuard><PrintReport /></AuthGuard>

@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Circle, RotateCcw, Settings2, FileText, Download, Camera, Share2, MousePointer2, Crosshair, X, Undo2, Redo2, MapPin, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
 import { export3DModelAsHtml } from '@/lib/export3DHtml';
 import { getAnatomyLabel } from '@/lib/anatomyStore';
-import { saveCaseToDb, isSupabaseConfigured } from '@/lib/caseDb';
 import AppLayout from '@/components/AppLayout';
 import { Slider } from '@/components/ui/slider';
 
@@ -66,34 +65,6 @@ export default function Home() {
   };
 
   const [isExporting, setIsExporting] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const handleSaveAndShare = async () => {
-    if (lesions.length === 0) {
-      toast.warning('Adicione pelo menos uma lesão antes de salvar.');
-      return;
-    }
-    if (!isSupabaseConfigured()) {
-      toast.error('Supabase não está configurado. Configure as variáveis de ambiente.');
-      return;
-    }
-    setIsSaving(true);
-    try {
-      const caseId = await saveCaseToDb({
-        patient_name: examInfo.patient,
-        exam_date: examInfo.date,
-        lesions: lesions,
-      });
-      const shareUrl = `${window.location.origin}/view/${caseId}`;
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success('Caso salvo! Link copiado para a área de transferência.', { description: shareUrl });
-    } catch (error) {
-      console.error('Erro ao salvar:', error);
-      toast.error('Erro ao salvar o caso. Verifique a configuração do Supabase.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   const handleExportHtml = async () => {
     if (lesions.length === 0) {
@@ -224,17 +195,6 @@ export default function Home() {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleSaveAndShare}
-                disabled={isSaving}
-                className="text-xs h-8 border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
-                data-testid="button-save-share"
-              >
-                <Share2 className="w-3.5 h-3.5 mr-1" />
-                {isSaving ? '...' : 'Compartilhar'}
-              </Button>
               <Button
                 size="sm"
                 onClick={handleGenerateReport}
