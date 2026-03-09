@@ -4,7 +4,7 @@
     {
       "label": "Git Sync ao Abrir",
       "type": "shell",
-      "command": "git add -A; git diff --cached --quiet; if (-not $?) { git commit -m 'auto-sync: mudanças locais do VS Code' }; git push origin main 2>$null; $stashed = git stash; git pull origin main --no-edit 2>$null; if ($stashed -match 'Saved') { git stash pop 2>$null }",
+      "command": "git add -A; git diff --cached --quiet; if (-not $?) { git commit -m 'auto-sync: mudanças locais do VS Code' }; $stashed = git stash; git pull origin main --no-edit 2>$null; if ($stashed -match 'Saved') { git stash pop 2>$null }",
       "runOptions": {
         "runOn": "folderOpen"
       },
