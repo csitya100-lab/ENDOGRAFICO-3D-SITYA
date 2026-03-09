@@ -2,11 +2,9 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { MapPin, Grid3x3, FileText, ArrowRight, Stethoscope, Target, Layers, LogIn, LogOut } from 'lucide-react';
 import AppSidebar from '@/components/AppSidebar';
-import { useAuth } from '@/hooks/use-auth';
 
 export default function Landing() {
   const [, setLocation] = useLocation();
-  const { user, isLoading, isAuthenticated, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-gray-900 dark:text-white transition-colors">
@@ -21,45 +19,7 @@ export default function Landing() {
             <p className="text-xs text-gray-500 dark:text-slate-400">Mapeamento de Endometriose</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          {!isLoading && (
-            isAuthenticated && user ? (
-              <div className="flex items-center gap-3">
-                {user.profileImageUrl && (
-                  <img
-                    src={user.profileImageUrl}
-                    alt={user.firstName || ''}
-                    className="w-8 h-8 rounded-full object-cover border-2 border-pink-500/50"
-                    data-testid="img-user-avatar"
-                  />
-                )}
-                <span className="text-sm font-medium text-gray-700 dark:text-slate-300" data-testid="text-user-name">
-                  {user.firstName || user.email}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => logout()}
-                  className="text-gray-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400"
-                  data-testid="button-logout"
-                >
-                  <LogOut className="w-4 h-4 mr-1" />
-                  Sair
-                </Button>
-              </div>
-            ) : (
-              <a href="/api/login">
-                <Button
-                  className="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white"
-                  data-testid="button-login"
-                >
-                  <LogIn className="w-4 h-4 mr-1" />
-                  Entrar
-                </Button>
-              </a>
-            )
-          )}
-        </div>
+        <div className="flex items-center gap-3" />
       </header>
 
       <main className="max-w-5xl mx-auto px-8 py-12 ml-16">

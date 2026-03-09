@@ -6,8 +6,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useThemeStore } from "@/lib/themeStore";
-import { useAuth } from "@/hooks/use-auth";
-import { Loader2 } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 
 const Landing = lazy(() => import("@/pages/Landing"));
@@ -17,26 +15,6 @@ const PublicReport = lazy(() => import("@/pages/PublicReport"));
 const PrintReport = lazy(() => import("@/pages/PrintReport"));
 const PreviewReport = lazy(() => import("@/pages/PreviewReport"));
 const NotFound = lazy(() => import("@/pages/not-found"));
-
-function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isLoading, isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      window.location.href = "/api/login";
-    }
-  }, [isLoading, isAuthenticated]);
-
-  if (isLoading || !isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
-      </div>
-    );
-  }
-
-  return <>{children}</>;
-}
 
 function PageLoader() {
   return (
@@ -55,19 +33,11 @@ function Router() {
       <PageTransition>
         <Switch>
           <Route path="/" component={Landing} />
-          <Route path="/3d">
-            <AuthGuard><Home /></AuthGuard>
-          </Route>
-          <Route path="/vistas-2d">
-            <AuthGuard><Vistas2D /></AuthGuard>
-          </Route>
+          <Route path="/3d" component={Home} />
+          <Route path="/vistas-2d" component={Vistas2D} />
           <Route path="/relatorio/:id" component={PublicReport} />
-          <Route path="/imprimir">
-            <AuthGuard><PrintReport /></AuthGuard>
-          </Route>
-          <Route path="/preview-report">
-            <AuthGuard><PreviewReport /></AuthGuard>
-          </Route>
+          <Route path="/imprimir" component={PrintReport} />
+          <Route path="/preview-report" component={PreviewReport} />
           <Route component={NotFound} />
         </Switch>
       </PageTransition>

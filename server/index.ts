@@ -1,6 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 
@@ -61,24 +60,6 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Em ambientes locais (sem REPL_ID), desabilitamos auth por padrão
-  // para permitir uso offline sem configuração de OIDC.
-  const authDisabled =
-    process.env.DISABLE_AUTH === "true" || !process.env.REPL_ID;
-  if (authDisabled) {
-    app.get("/api/auth/user", (_req, res) => {
-      res.json({
-        id: "local-dev",
-        email: "local@example.com",
-        firstName: "Local",
-        lastName: "Dev",
-        profileImageUrl: "",
-      });
-    });
-  } else {
-    await setupAuth(app);
-    registerAuthRoutes(app);
-  }
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
