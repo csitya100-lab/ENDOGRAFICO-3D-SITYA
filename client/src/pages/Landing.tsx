@@ -80,7 +80,7 @@ export default function Landing() {
             <ul className="text-xs text-gray-500 dark:text-slate-500 space-y-1">
               <li className="flex items-center gap-2"><Target className="w-3 h-3" /> Caneta, linha, círculo</li>
               <li className="flex items-center gap-2"><Layers className="w-3 h-3" /> Cores e espessuras</li>
-              <li className="flex items-center gap-2"><Stethoscope className="w-3 h-3" /> Preenchimento hachura</li>
+              <li className="flex items-center gap-2"><Stethoscope className="w-3 h-3" /> Preenchimento reticulado</li>
             </ul>
           </div>
 
@@ -171,3 +171,4 @@ export default function Landing() {
     </div>
   );
 }
+

@@ -326,8 +326,8 @@ export default function Vistas2D() {
                 data-testid="select-fill-texture"
               >
                 <option value="none">Nenhum</option>
-                <option value="solid">S\u00f3lido</option>
-                <option value="pattern">Hachura</option>
+                <option value="solid">Sólido</option>
+                <option value="pattern">Reticulado</option>
               </select>
             )}
           </>
@@ -523,3 +523,4 @@ export default function Vistas2D() {
     </div>
   );
 }
+

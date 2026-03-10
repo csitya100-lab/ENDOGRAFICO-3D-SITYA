@@ -39,7 +39,7 @@ Minimalist UI: Removed thickness slider, export buttons, and unnecessary feature
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ESM modules
-- **API Design**: Minimal, primarily serves static files and integrates with AI for report generation.
+- **API Design**: Minimal; server serves static files and applies rate limiting to `/api/` for future use. No AI or report-text generation.
 
 ### Data Layer
 - **ORM**: Drizzle ORM with PostgreSQL dialect (for future user management).
@@ -93,9 +93,18 @@ Minimalist UI: Removed thickness slider, export buttons, and unnecessary feature
 - `@radix-ui/*`: Accessible UI primitives.
 - `zod`: Runtime type validation.
 
-### AI Integration
-- **Gemini AI**: POST `/api/generate-findings` endpoint using Gemini 2.5 Flash for generating medical report sections from lesion data. Integrated via Replit AI Integrations.
-- **Medical Profile**: Configured via `shared/knowledge/ai-medical-profile.json`, specializing in gynecological and obstetric ultrasonography, with a scientific and humanized approach.
+### Escopo do produto (sem IA diagnóstica)
+- **Foco:** Geração e visualização de **modelos gráficos** onde são inseridas e demonstradas as **lesões e suas localizações**. Não há interpretação nem geração de texto para relatório por IA.
+- **Comentários em texto:** Quando forem necessários, são sempre redigidos pelo profissional (campos de observação no app).
+- **Raciocínio diagnóstico:** Não existe neste momento nenhum raciocínio ou sugestão diagnóstica por IA.
+
+### API Review (uso real e necessidade)
+- **Auth:** Rotas em `server/replit_integrations/auth/routes.ts` (`GET /api/auth/user`) **não estão registradas** — `registerAuthRoutes()` não é chamado em `server/index.ts`. O cliente tem `auth-utils.ts` (redirect para `/api/login`, `isUnauthorizedError`) mas **não importa** essas funções em nenhum lugar. **Necessidade:** ou registrar auth e usar login/usuário, ou remover o código de auth e auth-utils se não for usado.
+- **Cliente:** `apiRequest` e `getQueryFn` em `queryClient.ts` existem para chamadas HTTP; **nenhum `useQuery`/`useMutation`** chama nenhuma API. React Query está configurado mas sem consumo de API atualmente.
+
+### Sugestão — Auth: usar ou remover
+- **Usar auth:** Em `server/index.ts` chamar `registerAuthRoutes(app)`; no cliente usar `useQuery` para `GET /api/auth/user` e, em 401, `redirectToLogin(toast)`.
+- **Remover auth:** Não registrar `registerAuthRoutes`; opcionalmente remover `auth/routes.ts` e `auth-utils.ts`. Sem login (uso local/anónimo) → remover. Com utilizadores identificados → usar.
 
 ### Supabase Configuration
 - **Environment Variables**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.

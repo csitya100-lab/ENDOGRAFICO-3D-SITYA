@@ -35,7 +35,7 @@ export default function CaseViewer() {
     }
 
     loadCaseFromDb(caseId)
-      .then((data) => {
+      .then((data: CaseData | null) => {
         if (data) {
           setCaseData(data);
           setLesions(data.lesions || []);
@@ -43,8 +43,8 @@ export default function CaseViewer() {
           setError('Caso não encontrado');
         }
       })
-      .catch((err) => {
-        setError(err.message || 'Erro ao carregar caso');
+      .catch((err: Error) => {
+        setError(err?.message || 'Erro ao carregar caso');
       })
       .finally(() => {
         setLoading(false);
