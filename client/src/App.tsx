@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useThemeStore } from "@/lib/themeStore";
+import { Loader2 } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 
 const Landing = lazy(() => import("@/pages/Landing"));
